@@ -1,6 +1,5 @@
-package com.plantify.pay.service;
+package com.plantify.pay.service.admin;
 
-import com.plantify.pay.client.UserInfoProvider;
 import com.plantify.pay.domain.dto.request.AccountAdminRequest;
 import com.plantify.pay.domain.dto.response.AccountAdminResponse;
 import com.plantify.pay.domain.entity.Account;
