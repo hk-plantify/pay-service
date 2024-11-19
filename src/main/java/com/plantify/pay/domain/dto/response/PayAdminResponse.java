@@ -5,7 +5,7 @@ import com.plantify.pay.domain.entity.PayStatus;
 
 import java.time.LocalDateTime;
 
-public record PayResponse(
+public record PayAdminResponse(
         Long payId,
         Long accountId,
         Long payNum,
@@ -15,8 +15,8 @@ public record PayResponse(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static PayResponse from(Pay pay) {
-        return new PayResponse(
+    public static PayAdminResponse from(Pay pay) {
+        return new PayAdminResponse(
                 pay.getPayId(),
                 pay.getAccount().getAccountId(),
                 pay.getPayNum(),

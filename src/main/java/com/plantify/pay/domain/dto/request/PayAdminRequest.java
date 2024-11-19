@@ -6,16 +6,16 @@ import com.plantify.pay.domain.entity.PayStatus;
 
 import java.time.LocalDateTime;
 
-public record PayRequest(
+public record PayAdminRequest(
         Long accountId,
         Long payNum,
         LocalDateTime expiryDate,
         Long balance,
         PayStatus payStatus
 ) {
-    public Pay toEntity(Account account) {
+    public Pay toEntity() {
         return Pay.builder()
-                .account(account)
+                .account(Account.builder().accountId(accountId).build())
                 .payNum(payNum)
                 .expiryDate(expiryDate)
                 .balance(balance)
