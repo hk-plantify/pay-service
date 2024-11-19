@@ -3,13 +3,13 @@ package com.plantify.pay.domain.dto.request;
 import com.plantify.pay.domain.entity.Account;
 import com.plantify.pay.domain.entity.AccountStatus;
 
-public record AccountRequest(
+public record AccountAdminRequest(
+        Long userId,
         Long accountNum,
         String bankName,
         AccountStatus accountStatus,
         String accountHolder
 ) {
-
     public Account toEntity(Long userId) {
         return Account.builder()
                 .userId(userId)

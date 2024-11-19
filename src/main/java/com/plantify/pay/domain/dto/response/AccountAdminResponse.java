@@ -5,7 +5,7 @@ import com.plantify.pay.domain.entity.AccountStatus;
 
 import java.time.LocalDateTime;
 
-public record AccountResponse(
+public record AccountAdminResponse(
         Long accountId,
         Long userId,
         Long accountNum,
@@ -15,9 +15,8 @@ public record AccountResponse(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-
-    public static AccountResponse from(Account account) {
-        return new AccountResponse(
+    public static AccountAdminResponse from(Account account) {
+        return new AccountAdminResponse(
                 account.getAccountId(),
                 account.getUserId(),
                 account.getAccountNum(),
