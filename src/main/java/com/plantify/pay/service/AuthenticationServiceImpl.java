@@ -1,6 +1,6 @@
 package com.plantify.pay.service;
 
-import com.plantify.pay.client.UserInfoProvider;
+import com.plantify.pay.util.UserInfoProvider;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.PayErrorCode;
 import lombok.RequiredArgsConstructor;
