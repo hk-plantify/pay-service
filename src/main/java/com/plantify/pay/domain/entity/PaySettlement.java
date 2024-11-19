@@ -13,12 +13,12 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PSettlement extends BaseEntity {
+public class PaySettlement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Long pSettlementId;
+    private Long paySettlementId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pay_id", nullable = false)
