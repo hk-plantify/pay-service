@@ -1,4 +1,4 @@
-package com.plantify.pay.service;
+package com.plantify.pay.service.settlement;
 
 import com.plantify.pay.domain.dto.response.PaySettlementUserResponse;
 import org.springframework.data.domain.Page;

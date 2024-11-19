@@ -1,9 +1,9 @@
-package com.plantify.pay.controller;
+package com.plantify.pay.controller.account;
 
 import com.plantify.pay.domain.dto.request.AccountAdminRequest;
 import com.plantify.pay.domain.dto.response.AccountAdminResponse;
 import com.plantify.pay.global.response.ApiResponse;
-import com.plantify.pay.service.admin.AccountAdminService;
+import com.plantify.pay.service.account.AccountAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

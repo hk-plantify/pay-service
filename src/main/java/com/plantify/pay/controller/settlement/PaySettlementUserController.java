@@ -1,8 +1,8 @@
-package com.plantify.pay.controller;
+package com.plantify.pay.controller.settlement;
 
 import com.plantify.pay.domain.dto.response.PaySettlementUserResponse;
 import com.plantify.pay.global.response.ApiResponse;
-import com.plantify.pay.service.PaySettlementUserService;
+import com.plantify.pay.service.settlement.PaySettlementUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

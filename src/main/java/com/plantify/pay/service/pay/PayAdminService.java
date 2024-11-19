@@ -1,4 +1,4 @@
-package com.plantify.pay.service.admin;
+package com.plantify.pay.service.pay;
 
 import com.plantify.pay.domain.dto.request.PayAdminRequest;
 import com.plantify.pay.domain.dto.response.PayAdminResponse;

@@ -1,17 +1,14 @@
-package com.plantify.pay.controller;
+package com.plantify.pay.controller.account;
 
 import com.plantify.pay.domain.dto.request.AccountUserRequest;
-import com.plantify.pay.domain.dto.response.AccountAdminResponse;
 import com.plantify.pay.domain.dto.response.AccountUserResponse;
 import com.plantify.pay.global.response.ApiResponse;
-import com.plantify.pay.service.AccountUserService;
+import com.plantify.pay.service.account.AccountUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,8 +43,8 @@ public class AccountUserController {
     // 자신의 특정 계좌 수정
     @PutMapping("/{accountId}")
     public ResponseEntity<ApiResponse<AccountUserResponse>> updateAccountByAccountId(
-            @PathVariable Long accountId) {
-        AccountUserResponse response = accountUserService.updateAccountByAccountId(accountId);
+            @PathVariable Long accountId, @RequestBody AccountUserRequest request) {
+        AccountUserResponse response = accountUserService.updateAccountByAccountId(accountId, request);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 

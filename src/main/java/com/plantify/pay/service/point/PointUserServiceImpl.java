@@ -1,4 +1,4 @@
-package com.plantify.pay.service;
+package com.plantify.pay.service.point;
 
 import com.plantify.pay.global.exception.errorcode.PointErrorCode;
 import com.plantify.pay.util.UserInfoProvider;

@@ -1,8 +1,8 @@
-package com.plantify.pay.controller;
+package com.plantify.pay.controller.point;
 
 import com.plantify.pay.domain.dto.response.PointAdminResponse;
 import com.plantify.pay.global.response.ApiResponse;
-import com.plantify.pay.service.PointAdminService;
+import com.plantify.pay.service.point.PointAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

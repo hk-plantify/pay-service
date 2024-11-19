@@ -1,6 +1,5 @@
-package com.plantify.pay.service;
+package com.plantify.pay.service.account;
 
-import com.plantify.pay.client.UserInfoProvider;
 import com.plantify.pay.domain.dto.request.AccountUserRequest;
 import com.plantify.pay.domain.dto.response.AccountUserResponse;
 import com.plantify.pay.domain.entity.Account;
@@ -8,6 +7,7 @@ import com.plantify.pay.domain.entity.AccountStatus;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.AccountErrorCode;
 import com.plantify.pay.repository.AccountRepository;
+import com.plantify.pay.util.UserInfoProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
