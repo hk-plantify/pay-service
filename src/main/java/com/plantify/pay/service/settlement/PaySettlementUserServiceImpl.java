@@ -1,7 +1,7 @@
 package com.plantify.pay.service.settlement;
 
 import com.plantify.pay.util.UserInfoProvider;
-import com.plantify.pay.domain.dto.response.PaySettlementUserResponse;
+import com.plantify.pay.domain.dto.settlement.PaySettlementUserResponse;
 import com.plantify.pay.domain.entity.PaySettlement;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.SettlementErrorCode;
@@ -11,6 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class PaySettlementUserServiceImpl implements PaySettlementUserService {
@@ -19,10 +22,12 @@ public class PaySettlementUserServiceImpl implements PaySettlementUserService {
     private final UserInfoProvider userInfoProvider;
 
     @Override
-    public Page<PaySettlementUserResponse> getAllPaySettlements(Pageable pageable) {
+    public List<PaySettlementUserResponse> getAllPaySettlements() {
         Long userId = userInfoProvider.getUserInfo().userId();
-        return paySettlementRepository.findByPayAccountUserId(userId, pageable)
-                .map(PaySettlementUserResponse::from);
+        return paySettlementRepository.findByPayAccountUserId(userId)
+                .stream()
+                .map(PaySettlementUserResponse::from)
+                .collect(Collectors.toList());
     }
 
     @Override

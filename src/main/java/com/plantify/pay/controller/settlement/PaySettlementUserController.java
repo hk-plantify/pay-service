@@ -1,6 +1,6 @@
 package com.plantify.pay.controller.settlement;
 
-import com.plantify.pay.domain.dto.response.PaySettlementUserResponse;
+import com.plantify.pay.domain.dto.settlement.PaySettlementUserResponse;
 import com.plantify.pay.global.response.ApiResponse;
 import com.plantify.pay.service.settlement.PaySettlementUserService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/pay/settlements")
@@ -21,16 +23,15 @@ public class PaySettlementUserController {
 
     // 자신의 모든 결제 내역
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<PaySettlementUserResponse>>> getAllPaySettlements(Pageable pageable) {
-        Page<PaySettlementUserResponse> response = paySettlementUserService.getAllPaySettlements(pageable);
-        return ResponseEntity.ok(ApiResponse.ok(response));
+    public ApiResponse<List<PaySettlementUserResponse>> getAllPaySettlements() {
+        List<PaySettlementUserResponse> response = paySettlementUserService.getAllPaySettlements();
+        return ApiResponse.ok(response);
     }
 
     // 자신의 특정 결제 내역
     @GetMapping("/{paySettlementId}")
-    public ResponseEntity<ApiResponse<PaySettlementUserResponse>> getPaySettlementById(
-            @PathVariable Long paySettlementId) {
+    public ApiResponse<PaySettlementUserResponse> getPaySettlementById(@PathVariable Long paySettlementId) {
         PaySettlementUserResponse response = paySettlementUserService.getPaySettlementById(paySettlementId);
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        return ApiResponse.ok(response);
     }
 }
