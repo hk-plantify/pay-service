@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MonthlyPS extends BaseEntity {
+public class MonthlyPaymentSettlement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Long monthlyPSId;
+    private Long monthlyId;
 
     private Long totalGrossAmount;
 

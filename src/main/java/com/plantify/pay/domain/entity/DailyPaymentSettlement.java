@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DailyPS extends BaseEntity {
+public class DailyPaymentSettlement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Long dailyPSId;
+    private Long dailyId;
 
     private Long totalGrossAmount;
 
