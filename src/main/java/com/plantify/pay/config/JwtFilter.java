@@ -1,7 +1,7 @@
 package com.plantify.pay.config;
 
 import com.plantify.pay.client.AuthServiceClient;
-import com.plantify.pay.domain.dto.response.AuthUserResponse;
+import com.plantify.pay.domain.dto.AuthUserResponse;
 import com.plantify.pay.global.response.ApiResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -34,7 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 ApiResponse<AuthUserResponse> authResponse = authServiceClient.getUserInfo("Bearer " + token);
 
-                if (authResponse.getStatus() == HttpStatus.OK && authResponse.getData() != null) {
+                if (authResponse.getStatus() == HttpStatus.OK.value() && authResponse.getData() != null) {
                     AuthUserResponse userResponse = authResponse.getData();
                     Authentication authentication = getAuthentication(userResponse);
                     SecurityContextHolder.getContext().setAuthentication(authentication);

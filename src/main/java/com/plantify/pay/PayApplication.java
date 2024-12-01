@@ -2,10 +2,11 @@ package com.plantify.pay;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
-@FeignClient
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
+@EnableFeignClients
 public class PayApplication {
 
 	public static void main(String[] args) {

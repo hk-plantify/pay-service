@@ -1,4 +1,4 @@
-package com.plantify.pay.domain.dto.response;
+package com.plantify.pay.domain.dto;
 
 public record AuthUserResponse(Long userId, String role) {
 
