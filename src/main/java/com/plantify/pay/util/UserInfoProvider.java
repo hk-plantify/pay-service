@@ -1,6 +1,6 @@
 package com.plantify.pay.util;
 
-import com.plantify.pay.domain.dto.response.AuthUserResponse;
+import com.plantify.pay.domain.dto.AuthUserResponse;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.AuthErrorCode;
 import org.springframework.security.core.Authentication;
