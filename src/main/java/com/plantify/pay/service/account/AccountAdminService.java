@@ -1,7 +1,7 @@
 package com.plantify.pay.service.account;
 
-import com.plantify.pay.domain.dto.request.AccountAdminRequest;
-import com.plantify.pay.domain.dto.response.AccountAdminResponse;
+import com.plantify.pay.domain.dto.account.AccountAdminRequest;
+import com.plantify.pay.domain.dto.account.AccountAdminResponse;
 
 import java.util.List;
 

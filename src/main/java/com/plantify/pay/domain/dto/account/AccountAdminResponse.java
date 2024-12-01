@@ -1,4 +1,4 @@
-package com.plantify.pay.domain.dto.response;
+package com.plantify.pay.domain.dto.account;
 
 import com.plantify.pay.domain.entity.Account;
 import com.plantify.pay.domain.entity.AccountStatus;

@@ -1,11 +1,10 @@
 package com.plantify.pay.controller.account;
 
-import com.plantify.pay.domain.dto.request.AccountAdminRequest;
-import com.plantify.pay.domain.dto.response.AccountAdminResponse;
+import com.plantify.pay.domain.dto.account.AccountAdminRequest;
+import com.plantify.pay.domain.dto.account.AccountAdminResponse;
 import com.plantify.pay.global.response.ApiResponse;
 import com.plantify.pay.service.account.AccountAdminService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,33 +18,32 @@ public class AccountAdminController {
 
     // 모든 계좌 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<List<AccountAdminResponse>>> getAllAccounts() {
+    public ApiResponse<List<AccountAdminResponse>> getAllAccounts() {
         List<AccountAdminResponse> response = accountAdminService.getAllAccounts();
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        return ApiResponse.ok(response);
     }
 
     // 특정 사용자 계좌 조회
     @GetMapping("/users/{userId}")
-    public ResponseEntity<ApiResponse<List<AccountAdminResponse>>> getAccountsByUserId(
-            @PathVariable Long userId) {
+    public ApiResponse<List<AccountAdminResponse>> getAccountsByUserId(@PathVariable Long userId) {
         List<AccountAdminResponse> response = accountAdminService.getAccountsByUserId(userId);
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        return ApiResponse.ok(response);
     }
 
     // 특정 사용자 계좌 수정
     @PutMapping("/{accountId}/users/{userId}")
-    public ResponseEntity<ApiResponse<AccountAdminResponse>> updateAccountByAccountIdAndUserId(
+    public ApiResponse<AccountAdminResponse> updateAccountByAccountIdAndUserId(
             @PathVariable Long accountId, @PathVariable Long userId, @RequestBody AccountAdminRequest request) {
         AccountAdminResponse response = accountAdminService.updateAccountByAccountIdAndUserId(accountId, userId, request);
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        return ApiResponse.ok(response);
     }
 
     // 특정 사용자 계좌 삭제(계좌 상태:INACTIVE)
     @DeleteMapping("/{accountId}/users/{userId}")
-    public ResponseEntity<ApiResponse<AccountAdminResponse>> deactivateAccountByAccountIdAndUserId(
+    public ApiResponse<AccountAdminResponse> deactivateAccountByAccountIdAndUserId(
             @PathVariable Long accountId, @PathVariable Long userId) {
         AccountAdminResponse response = accountAdminService.deactivateAccountByAccountIdAndUserId(accountId, userId);
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        return ApiResponse.ok(response);
     }
 }
 
