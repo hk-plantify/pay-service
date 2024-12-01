@@ -1,4 +1,4 @@
-package com.plantify.pay.domain.dto.response;
+package com.plantify.pay.domain.dto.point;
 
 import com.plantify.pay.domain.entity.Point;
 

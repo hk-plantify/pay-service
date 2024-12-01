@@ -1,6 +1,6 @@
 package com.plantify.pay.service.point;
 
-import com.plantify.pay.domain.dto.response.PointAdminResponse;
+import com.plantify.pay.domain.dto.point.PointAdminResponse;
 
 import java.util.List;
 

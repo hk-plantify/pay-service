@@ -1,6 +1,6 @@
 package com.plantify.pay.service.point;
 
-import com.plantify.pay.domain.dto.response.PointAdminResponse;
+import com.plantify.pay.domain.dto.point.PointAdminResponse;
 import com.plantify.pay.domain.entity.Point;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.PointErrorCode;
@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class PointAdminServiceImpl implements PointAdminService {
 
     private final PointRepository pointRepository;
+
     @Override
     public List<PointAdminResponse> getAllUserPoints() {
         return pointRepository.findAll().stream()
