@@ -1,4 +1,4 @@
-package com.plantify.pay.domain.dto.response;
+package com.plantify.pay.domain.dto.point;
 
 import com.plantify.pay.domain.entity.Point;
 
@@ -11,9 +11,9 @@ public record PointUserResponse(
     public static PointUserResponse from(Point point) {
         return new PointUserResponse(
                 point.getUserId(),
-                point.getPointBalance(),
-                point.getAccumulatedPoints(),
-                point.getRedeemedPoints()
+                point.getPointBalance() != null ? point.getPointBalance() : 0L,
+                point.getAccumulatedPoints() != null ? point.getAccumulatedPoints() : 0L,
+                point.getRedeemedPoints() != null ? point.getRedeemedPoints() : 0L
         );
     }
 }

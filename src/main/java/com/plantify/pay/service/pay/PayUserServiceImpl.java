@@ -1,40 +1,45 @@
 package com.plantify.pay.service.pay;
 
-import com.plantify.pay.domain.dto.TransactionStatusMessage;
-import com.plantify.pay.domain.dto.request.PayUserRequest;
-import com.plantify.pay.domain.dto.response.PayUserResponse;
+import com.plantify.pay.client.TransactionServiceClient;
+import com.plantify.pay.domain.dto.kafka.ExternalTransactionResponse;
+import com.plantify.pay.domain.dto.kafka.TransactionRequest;
+import com.plantify.pay.domain.dto.kafka.TransactionResponse;
+import com.plantify.pay.domain.dto.kafka.TransactionStatusResponse;
+import com.plantify.pay.domain.dto.pay.PayUserRequest;
+import com.plantify.pay.domain.dto.pay.PayUserResponse;
 import com.plantify.pay.domain.entity.Pay;
-import com.plantify.pay.domain.entity.PayStatus;
-import com.plantify.pay.domain.entity.Point;
 import com.plantify.pay.global.exception.ApplicationException;
+import com.plantify.pay.global.exception.errorcode.AuthErrorCode;
 import com.plantify.pay.global.exception.errorcode.PayErrorCode;
-import com.plantify.pay.global.exception.errorcode.PointErrorCode;
-import com.plantify.pay.kafka.KafkaProducer;
+import com.plantify.pay.jwt.JwtProvider;
 import com.plantify.pay.repository.PayRepository;
-import com.plantify.pay.repository.PointRepository;
 import com.plantify.pay.util.UserInfoProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class PayUserServiceImpl implements PayUserService, PayInternalService {
+public class PayUserServiceImpl implements PayUserService, PayTransactionService {
 
     private final PayRepository payRepository;
     private final UserInfoProvider userInfoProvider;
-    private final KafkaProducer kafkaProducer;
-    private final PointRepository pointRepository;
+    private final PayInternalService payInternalService;
+    private final JwtProvider jwtProvider;
+    private final TransactionServiceClient transactionServiceClient;
+
 
     @Override
-    public Page<PayUserResponse> getAllPays(Pageable pageable) {
+    @Transactional(readOnly = true)
+    public PayUserResponse getPay() {
         Long userId = userInfoProvider.getUserInfo().userId();
-        return payRepository.findByAccountUserId(userId, pageable)
-                .map(PayUserResponse::from);
+        Pay pay = payRepository.findByAccountUserId(userId)
+                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
+        return PayUserResponse.from(pay);
     }
 
     @Override
+    @Transactional
     public PayUserResponse createPay(PayUserRequest request) {
         Long userId = userInfoProvider.getUserInfo().userId();
         if (payRepository.existsByAccountUserId(userId)) {
@@ -47,49 +52,42 @@ public class PayUserServiceImpl implements PayUserService, PayInternalService {
     }
 
     @Override
-    public PayUserResponse balanceRechargePay(Long payId, PayUserRequest request) {
+    @Transactional
+    public PayUserResponse balanceRechargePay(PayUserRequest request) {
         Long userId = userInfoProvider.getUserInfo().userId();
-        Pay pay = payRepository.findByPayIdAndAccountUserId(payId, userId)
-                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
-
-        pay = pay.toBuilder()
-                .balance(pay.getBalance() + request.balance())
-                .build();
-
-        payRepository.save(pay);
-        return PayUserResponse.from(pay);
+        Pay updatedPay = payInternalService.rechargeBalance(userId, request.balance());
+        return PayUserResponse.from(updatedPay);
     }
 
     @Override
-    public void handleTransactionSuccess(Long transactionId, Long userId, Long amount) {
-        Pay pay = payRepository.findById(transactionId)
-                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
-        pay = pay.toBuilder()
-                .payStatus(PayStatus.SUCCESS)
-                .build();
-        payRepository.save(pay);
-
-        Long rewardPoints = Math.round(amount * 0.005);
-        Point point = pointRepository.findByUserId(userId)
-                .orElseThrow(() -> new ApplicationException(PointErrorCode.POINT_NOT_FOUND));
-        point = point.toBuilder()
-                .pointBalance(point.getPointBalance() + rewardPoints)
-                .accumulatedPoints(point.getAccumulatedPoints() + rewardPoints)
-                .build();
-        pointRepository.save(point);
-
-        kafkaProducer.sendMessage("transaction-success", new TransactionStatusMessage(transactionId, userId, amount, "SUCCESS"));
+    @Transactional
+    public TransactionResponse createTransaction(Long sellerId, TransactionRequest request) {
+        return payInternalService.executeTransaction(sellerId, request, false);
     }
 
     @Override
-    public void handleTransactionFailure(Long transactionId, Long userId) {
-        Pay pay = payRepository.findById(transactionId)
-                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
-        pay = pay.toBuilder()
-                .payStatus(PayStatus.FAILED)
-                .build();
-        payRepository.save(pay);
+    @Transactional
+    public ExternalTransactionResponse createExternalTransaction(Long sellerId, TransactionRequest request) {
+        TransactionResponse transactionResponse = payInternalService
+                .executeTransaction(sellerId, request, true);
 
-        kafkaProducer.sendMessage("transaction-failure", new TransactionStatusMessage(transactionId, userId, null, "FAILED"));
+        String token = jwtProvider.createAccessToken(transactionResponse.transactionId());
+        return ExternalTransactionResponse.from(transactionResponse, token);
+    }
+
+    @Override
+    @Transactional
+    public TransactionResponse refundTransaction(Long sellerId, TransactionRequest request) {
+        return payInternalService.refundTransaction(sellerId, request);
+    }
+
+    @Override
+    public TransactionStatusResponse getTransactionStatus(String token) {
+        if (token == null || !jwtProvider.validateToken(token)) {
+            throw new ApplicationException(AuthErrorCode.INVALID_TOKEN);
+        }
+        Long transactionId = jwtProvider.getClaims(token).get("id", Long.class);
+        TransactionResponse transactionResponse = transactionServiceClient.getTransactionById(transactionId);
+        return TransactionStatusResponse.from(transactionResponse);
     }
 }
