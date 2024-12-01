@@ -1,6 +1,6 @@
 package com.plantify.pay.service.settlement;
 
-import com.plantify.pay.domain.dto.response.PaySettlementAdminResponse;
+import com.plantify.pay.domain.dto.settlement.PaySettlementAdminResponse;
 
 import java.util.List;
 

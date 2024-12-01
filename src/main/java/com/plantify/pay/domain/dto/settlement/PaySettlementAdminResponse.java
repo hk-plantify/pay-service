@@ -1,4 +1,4 @@
-package com.plantify.pay.domain.dto.response;
+package com.plantify.pay.domain.dto.settlement;
 
 import com.plantify.pay.domain.entity.PaySettlement;
 import com.plantify.pay.domain.entity.TransactionType;
