@@ -1,7 +1,7 @@
 package com.plantify.pay.controller.pay;
 
-import com.plantify.pay.domain.dto.request.PayAdminRequest;
-import com.plantify.pay.domain.dto.response.PayAdminResponse;
+import com.plantify.pay.domain.dto.pay.PayAdminRequest;
+import com.plantify.pay.domain.dto.pay.PayAdminResponse;
 import com.plantify.pay.global.response.ApiResponse;
 import com.plantify.pay.service.pay.PayAdminService;
 import lombok.RequiredArgsConstructor;
@@ -19,23 +19,23 @@ public class PayAdminController {
 
     // 모든 페이 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PayAdminResponse>>> getAllPays() {
+    public ApiResponse<List<PayAdminResponse>> getAllPays() {
         List<PayAdminResponse> response = payAdminService.getAllPays();
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        return ApiResponse.ok(response);
     }
 
     // 특정 사용자 페이 조회
     @GetMapping("/users/{userId}")
-    public ResponseEntity<ApiResponse<List<PayAdminResponse>>> getPaysByUserId(@PathVariable Long userId) {
+    public ApiResponse<List<PayAdminResponse>> getPaysByUserId(@PathVariable Long userId) {
         List<PayAdminResponse> response = payAdminService.getPaysByUserId(userId);
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        return ApiResponse.ok(response);
     }
 
     // 특정 페이 상태 변경 (PENDING, SUCCESS, CANCELLED, FAILED)
     @PutMapping("/{payId}/users/{userId}")
-    public ResponseEntity<ApiResponse<PayAdminResponse>> updatePayByPayIdAndUserId(
+    public ApiResponse<PayAdminResponse> updatePayByPayIdAndUserId(
             @PathVariable Long payId, @PathVariable Long userId, @RequestBody PayAdminRequest request) {
         PayAdminResponse response = payAdminService.updatePayByPayIdAndUserId(payId, userId, request);
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        return ApiResponse.ok(response);
     }
 }

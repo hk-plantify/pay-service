@@ -1,7 +1,7 @@
 package com.plantify.pay.service.pay;
 
-import com.plantify.pay.domain.dto.request.PayAdminRequest;
-import com.plantify.pay.domain.dto.response.PayAdminResponse;
+import com.plantify.pay.domain.dto.pay.PayAdminRequest;
+import com.plantify.pay.domain.dto.pay.PayAdminResponse;
 import com.plantify.pay.domain.entity.Pay;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.PayErrorCode;
