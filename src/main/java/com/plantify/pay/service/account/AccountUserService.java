@@ -1,13 +1,13 @@
 package com.plantify.pay.service.account;
 
-import com.plantify.pay.domain.dto.request.AccountUserRequest;
-import com.plantify.pay.domain.dto.response.AccountUserResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.plantify.pay.domain.dto.account.AccountUserRequest;
+import com.plantify.pay.domain.dto.account.AccountUserResponse;
+
+import java.util.List;
 
 public interface AccountUserService {
 
-    Page<AccountUserResponse> getAllAccounts(Pageable pageable);
+    List<AccountUserResponse> getAllAccounts();
     AccountUserResponse getAccountByAccountId(Long accountId);
     AccountUserResponse createAccount(AccountUserRequest request);
     AccountUserResponse updateAccountByAccountId(Long accountId, AccountUserRequest request);

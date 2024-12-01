@@ -1,7 +1,7 @@
 package com.plantify.pay.service.account;
 
-import com.plantify.pay.domain.dto.request.AccountUserRequest;
-import com.plantify.pay.domain.dto.response.AccountUserResponse;
+import com.plantify.pay.domain.dto.account.AccountUserRequest;
+import com.plantify.pay.domain.dto.account.AccountUserResponse;
 import com.plantify.pay.domain.entity.Account;
 import com.plantify.pay.domain.entity.AccountStatus;
 import com.plantify.pay.global.exception.ApplicationException;
@@ -9,9 +9,10 @@ import com.plantify.pay.global.exception.errorcode.AccountErrorCode;
 import com.plantify.pay.repository.AccountRepository;
 import com.plantify.pay.util.UserInfoProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +22,12 @@ public class AccountUserServiceImpl implements AccountUserService {
     private final UserInfoProvider userInfoProvider;
 
     @Override
-    public Page<AccountUserResponse> getAllAccounts(Pageable pageable) {
+    public List<AccountUserResponse> getAllAccounts() {
         Long userId = userInfoProvider.getUserInfo().userId();
-        return accountRepository.findByUserId(userId, pageable)
-                .map(AccountUserResponse::from);
+        return accountRepository.findByUserId(userId)
+                .stream()
+                .map(AccountUserResponse::from)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -49,14 +52,8 @@ public class AccountUserServiceImpl implements AccountUserService {
         Account account = accountRepository.findByAccountIdAndUserId(accountId, userId)
                 .orElseThrow(() -> new ApplicationException(AccountErrorCode.ACCOUNT_NOT_FOUND));
 
-        account = account.toBuilder()
-                .accountNum(request.accountNum())
-                .bankName(request.bankName())
-                .accountStatus(request.accountStatus())
-                .accountHolder(request.accountHolder())
-                .build();
-
-        accountRepository.save(account);
+        Account updatedAccount = request.updatedAccount(account);
+        accountRepository.save(updatedAccount);
 
         return AccountUserResponse.from(account);
     }
