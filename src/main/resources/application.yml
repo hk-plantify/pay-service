@@ -26,7 +26,30 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    topic:
+      transaction-status: transaction.status
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
 
 auth:
   service:
     url: http://localhost:8080
+transaction:
+  service:
+    url: http://localhost:1111
+server:
+  port: 9090
+
+jwt:
+  secret: ENC(29vK1PECW2Jls40pgFDgITil5EnUObTxvycoWtm7Orm+Xj93YE5bZHjPKPLcaQNsGnddf5uX+lc=)
+  access-token-expiration: ENC(/T++6ZbhvDUhaZgscOQ/oKJZzHHk3VQ9)
+#  ENC(ch/UXDWKupu5PnMpcI3DEg==)
