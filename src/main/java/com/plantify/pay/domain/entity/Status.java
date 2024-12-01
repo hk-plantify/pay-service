@@ -1,6 +1,6 @@
 package com.plantify.pay.domain.entity;
 
-public enum PayStatus {
+public enum Status {
     PENDING,
     SUCCESS,
     CANCELLED,

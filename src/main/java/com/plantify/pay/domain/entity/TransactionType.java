@@ -1,7 +1,10 @@
 package com.plantify.pay.domain.entity;
 
 public enum TransactionType {
-    DEPOSIT,
-    WITHDRAWAL,
-    REFUND
+    PAYMENT,
+    REFUND,
+    CANCELLATION,
+    POINT_REWARD,
+    POINT_REDEEM,
+    DEPOSIT
 }

@@ -35,5 +35,5 @@ public class Pay extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PayStatus payStatus;
+    private Status payStatus;
 }
