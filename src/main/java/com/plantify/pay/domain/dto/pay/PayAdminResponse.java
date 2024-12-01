@@ -1,7 +1,7 @@
-package com.plantify.pay.domain.dto.response;
+package com.plantify.pay.domain.dto.pay;
 
 import com.plantify.pay.domain.entity.Pay;
-import com.plantify.pay.domain.entity.PayStatus;
+import com.plantify.pay.domain.entity.Status;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +11,7 @@ public record PayAdminResponse(
         Long payNum,
         LocalDateTime expiryDate,
         Long balance,
-        PayStatus payStatus,
+        Status payStatus,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
