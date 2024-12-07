@@ -9,18 +9,20 @@ public record PaySettlementUserResponse(
         Long paySettlementId,
         Long payId,
         TransactionType transactionType,
-        Long transactionAmount,
+        Long amount,
         Long balanceAfter,
-        LocalDateTime transactionDate
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
     public static PaySettlementUserResponse from(PaySettlement paySettlement) {
         return new PaySettlementUserResponse(
                 paySettlement.getPaySettlementId(),
                 paySettlement.getPay().getPayId(),
                 paySettlement.getTransactionType(),
-                paySettlement.getTransactionAmount(),
+                paySettlement.getAmount(),
                 paySettlement.getBalanceAfter(),
-                paySettlement.getTransactionDate()
+                paySettlement.getCreatedAt(),
+                paySettlement.getUpdatedAt()
         );
     }
 }
