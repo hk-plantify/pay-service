@@ -26,7 +26,7 @@ public class PointAdminController {
     }
 
     // 특정 사용자 포인트 조회
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     public ApiResponse<PointAdminResponse> getUserPointsByUserId(@PathVariable Long userId) {
         PointAdminResponse response = pointAdminService.getUserPointsByUserId(userId);
         return ApiResponse.ok(response);
