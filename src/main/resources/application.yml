@@ -23,11 +23,14 @@ spring:
     consumer:
       group-id: pay-service-group
       auto-offset-reset: earliest
+#      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.ByteArrayDeserializer
     producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     topic:
-      transaction-status: transaction.status
+      transaction-status: transaction.status-7
   data:
     redis:
       host: localhost
@@ -42,14 +45,14 @@ spring:
 
 auth:
   service:
-    url: http://localhost:8080
+    url: http://localhost:8888
 transaction:
   service:
-    url: http://localhost:1111
-server:
-  port: 9090
+    url: http://localhost:2222
 
 jwt:
   secret: ENC(29vK1PECW2Jls40pgFDgITil5EnUObTxvycoWtm7Orm+Xj93YE5bZHjPKPLcaQNsGnddf5uX+lc=)
   access-token-expiration: ENC(/T++6ZbhvDUhaZgscOQ/oKJZzHHk3VQ9)
 #  ENC(ch/UXDWKupu5PnMpcI3DEg==)
+server:
+  port: 1111
