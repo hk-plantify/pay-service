@@ -1,5 +1,6 @@
 package com.plantify.pay.domain.entity;
 
+import com.plantify.pay.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,19 +19,31 @@ public class Account extends BaseEntity {
     @Column(unique = true, nullable = false)
     private Long accountId;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payId")
+    private Pay pay;
 
     @Column(nullable = false)
     private Long accountNum;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String bankName;
+    private BankName bankName;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccountStatus accountStatus;
 
     @Column(nullable = false)
     private String accountHolder;
 
+    public Account updateStatus(AccountStatus status) {
+        this.accountStatus = status;
+        return this;
+    }
+
+    public Account linkToPay(Pay pay) {
+        this.pay = pay;
+        return this;
+    }
 }

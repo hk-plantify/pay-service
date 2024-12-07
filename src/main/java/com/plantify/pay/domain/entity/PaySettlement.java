@@ -1,5 +1,6 @@
 package com.plantify.pay.domain.entity;
 
+import com.plantify.pay.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,7 @@ public class PaySettlement extends BaseEntity {
     private Long paySettlementId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pay_id", nullable = false)
+    @JoinColumn(name = "payId", nullable = false)
     private Pay pay;
 
     @Enumerated(EnumType.STRING)
@@ -29,12 +30,8 @@ public class PaySettlement extends BaseEntity {
     private TransactionType transactionType;
 
     @Column(nullable = false)
-    private Long transactionAmount;
+    private Long amount;
 
     @Column(nullable = false)
     private Long balanceAfter;
-
-    @Column(nullable = false)
-    private LocalDateTime transactionDate;
-
 }

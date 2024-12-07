@@ -1,4 +1,4 @@
-package com.plantify.pay.domain.entity;
+package com.plantify.pay.global.util;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

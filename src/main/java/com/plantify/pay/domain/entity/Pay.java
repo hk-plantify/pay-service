@@ -1,5 +1,8 @@
 package com.plantify.pay.domain.entity;
 
+import com.plantify.pay.global.exception.ApplicationException;
+import com.plantify.pay.global.exception.errorcode.PayErrorCode;
+import com.plantify.pay.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +23,8 @@ public class Pay extends BaseEntity {
     @Column(unique = true, nullable = false)
     private Long payId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    @Column(nullable = false)
+    private Long userId;
 
     @Column(nullable = false)
     private Long payNum;
@@ -34,6 +36,45 @@ public class Pay extends BaseEntity {
     private Long balance;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status payStatus;
+    @Column
+    private Status status;
+
+    public void init(Long userId) {
+        this.userId = userId;
+        this.payNum = (long) (Math.random() * Math.pow(10, 16));
+        this.expiryDate = LocalDateTime.now().plusYears(5);
+        this.balance = 0L;
+    }
+
+    public void updatedBalance(long amount){
+        this.balance += amount;
+    }
+
+    public Pay validateAmount(long amount){
+        if (amount <= 0) {
+            throw new ApplicationException(PayErrorCode.INVALID_PAY_INPUT);
+        }
+        if (amount % 10_000 != 0) {
+            throw new ApplicationException(PayErrorCode.INVALID_CHARGE_UNIT);
+        }
+        return this;
+    }
+
+    public Pay validatePay(long amount){
+        if (this.balance < amount) {
+            throw new ApplicationException(PayErrorCode.INSUFFICIENT_BALANCE);
+        }
+        return this;
+    }
+
+    public Pay success(long amount) {
+        this.status = Status.SUCCESS;
+        this.balance -= amount;
+        return this;
+    }
+
+    public Pay fail(){
+        this.status = Status.FAILED;
+        return this;
+    }
 }
