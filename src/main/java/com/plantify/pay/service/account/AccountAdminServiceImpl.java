@@ -23,44 +23,31 @@ public class AccountAdminServiceImpl implements AccountAdminService {
     public List<AccountAdminResponse> getAllAccounts() {
         return accountRepository.findAll().stream()
                 .map(AccountAdminResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public List<AccountAdminResponse> getAccountsByUserId(Long userId) {
-        return accountRepository.findByUserId(userId).stream()
+        return accountRepository.findByPayUserId(userId).stream()
                 .map(AccountAdminResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
-    public AccountAdminResponse updateAccountByAccountIdAndUserId(Long accountId, Long userId, AccountAdminRequest request) {
-        Account account = accountRepository.findByAccountIdAndUserId(accountId, userId)
+    public AccountAdminResponse updateAccountByAccountIdAndUserId(Long accountId, AccountAdminRequest request) {
+        Account account = accountRepository.findByAccountIdAndPayUserId(accountId, request.userId())
                 .orElseThrow(() -> new ApplicationException(AccountErrorCode.ACCOUNT_NOT_FOUND));
 
-        account = account.toBuilder()
-                .accountNum(request.accountNum())
-                .bankName(request.bankName())
-                .accountStatus(request.accountStatus())
-                .accountHolder(request.accountHolder())
-                .build();
-
+        account.updateStatus(request.accountStatus());
         accountRepository.save(account);
-
         return AccountAdminResponse.from(account);
     }
 
     @Override
-    public AccountAdminResponse deactivateAccountByAccountIdAndUserId(Long accountId, Long userId) {
-        Account account = accountRepository.findByAccountIdAndUserId(accountId, userId)
+    public void deleteAccountByAccountIdAndUserId(Long accountId, Long userId) {
+        Account account = accountRepository.findByAccountIdAndPayUserId(accountId, userId)
                 .orElseThrow(() -> new ApplicationException(AccountErrorCode.ACCOUNT_NOT_FOUND));
 
-        account = account.toBuilder()
-                .accountStatus(AccountStatus.INACTIVE)
-                .build();
-
-        accountRepository.save(account);
-
-        return AccountAdminResponse.from(account);
+        accountRepository.delete(account);
     }
 }
