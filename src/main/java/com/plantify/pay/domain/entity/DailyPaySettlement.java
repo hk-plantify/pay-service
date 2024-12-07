@@ -1,5 +1,6 @@
 package com.plantify.pay.domain.entity;
 
+import com.plantify.pay.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +12,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MonthlyPaymentSettlement extends BaseEntity {
+public class DailyPaySettlement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Long monthlyId;
+    private Long dailyId;
 
     private Long totalGrossAmount;
 

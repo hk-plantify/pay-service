@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class PaySettlementAdminServiceImpl implements PaySettlementAdminService 
     public List<PaySettlementAdminResponse> getAllPaySettlements() {
         return paySettlementRepository.findAll().stream()
                 .map(PaySettlementAdminResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -33,8 +32,8 @@ public class PaySettlementAdminServiceImpl implements PaySettlementAdminService 
 
     @Override
     public List<PaySettlementAdminResponse> getPaySettlementsByUserId(Long userId) {
-        return paySettlementRepository.findByPayAccountUserId(userId).stream()
+        return paySettlementRepository.findByPayUserId(userId).stream()
                 .map(PaySettlementAdminResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

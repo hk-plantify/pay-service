@@ -30,20 +30,20 @@ public class AccountAdminController {
         return ApiResponse.ok(response);
     }
 
-    // 특정 사용자 계좌 수정
-    @PutMapping("/{accountId}/users/{userId}")
-    public ApiResponse<AccountAdminResponse> updateAccountByAccountIdAndUserId(
-            @PathVariable Long accountId, @PathVariable Long userId, @RequestBody AccountAdminRequest request) {
-        AccountAdminResponse response = accountAdminService.updateAccountByAccountIdAndUserId(accountId, userId, request);
+    // 특정 사용자 계좌 수정(status 변경)
+    @PutMapping("/{accountId}/users")
+    public ApiResponse<AccountAdminResponse> updateAccountStatus(
+            @PathVariable Long accountId, @RequestBody AccountAdminRequest request) {
+        AccountAdminResponse response = accountAdminService.updateAccountByAccountIdAndUserId(accountId, request);
         return ApiResponse.ok(response);
     }
 
-    // 특정 사용자 계좌 삭제(계좌 상태:INACTIVE)
-    @DeleteMapping("/{accountId}/users/{userId}")
-    public ApiResponse<AccountAdminResponse> deactivateAccountByAccountIdAndUserId(
+    // 특정 사용자 계좌 삭제
+    @DeleteMapping("/{accountId}/users")
+    public ApiResponse<Void> deleteAccountByAccountIdAndUserId(
             @PathVariable Long accountId, @PathVariable Long userId) {
-        AccountAdminResponse response = accountAdminService.deactivateAccountByAccountIdAndUserId(accountId, userId);
-        return ApiResponse.ok(response);
+        accountAdminService.deleteAccountByAccountIdAndUserId(accountId, userId);
+        return ApiResponse.ok();
     }
 }
 

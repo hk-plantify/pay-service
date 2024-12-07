@@ -1,12 +1,14 @@
 package com.plantify.pay.domain.dto.kafka;
 
-import com.plantify.pay.domain.entity.TransactionType;
 
 public record TransactionRequest(
         Long userId,
         Long sellerId,
-        TransactionType transactionType,
+        Long orderId,
+        String orderName,
         Long amount,
-        String reason
+        String transactionType,
+        String reason,
+        Long pointToUse
 ) {
 }

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface PaySettlementRepository extends JpaRepository<PaySettlement, Long> {
 
-    Page<PaySettlement> findByPayAccountUserId(Long userId, Pageable pageable);
-    List<PaySettlement> findByPayAccountUserId(Long userId);
-    Optional<PaySettlement> findByPaySettlementIdAndPayAccountUserId(Long paySettlementId, Long userId);
+    Page<PaySettlement> findByPayUserId(Long userId, Pageable pageable);
+    List<PaySettlement> findByPayUserId(Long userId);
+    Optional<PaySettlement> findByPaySettlementIdAndPayUserId(Long paySettlementId, Long userId);
 }

@@ -1,134 +1,120 @@
 package com.plantify.pay.service.pay;
 
 import com.plantify.pay.client.TransactionServiceClient;
-import com.plantify.pay.config.RedisLock;
-import com.plantify.pay.domain.dto.kafka.TransactionRequest;
-import com.plantify.pay.domain.dto.kafka.TransactionResponse;
+import com.plantify.pay.domain.dto.kafka.*;
 import com.plantify.pay.domain.entity.Pay;
 import com.plantify.pay.domain.entity.Status;
 import com.plantify.pay.domain.entity.TransactionType;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.PayErrorCode;
+import com.plantify.pay.global.util.DistributedLock;
 import com.plantify.pay.jwt.JwtProvider;
 import com.plantify.pay.repository.PayRepository;
+import com.plantify.pay.service.point.PointService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PayInternalServiceImpl implements PayInternalService {
 
-    private final RedisLock redisLock;
     private final PayRepository payRepository;
     private final TransactionServiceClient transactionServiceClient;
-
-    private static final int LOCK_TIMEOUT_MS = 3000;
-    private static final int MINIMUM_CHARGE_UNIT = 10_000;
+    private final DistributedLock distributedLock;
+    private final PointService pointService;
+    private final JwtProvider jwtProvider;
 
     @Override
     public Pay rechargeBalance(Long userId, Long amount) {
         String lockKey = String.format("pay:%d", userId);
 
         try {
-            tryLockOrThrow(lockKey);
-            validateAmount(amount);
-            Pay pay = payRepository.findByAccountUserId(userId)
+            distributedLock.tryLockOrThrow(lockKey);
+
+            Pay pay = payRepository.findByUserId(userId)
                     .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
 
-            pay = pay.toBuilder()
-                    .balance(pay.getBalance() + amount)
-                    .build();
+            pay.validateAmount(amount).updatedBalance(amount);
+
             return payRepository.save(pay);
         } finally {
-            redisLock.unlock(lockKey);
+            distributedLock.unlock(lockKey);
         }
     }
 
     @Override
-    public TransactionResponse executeTransaction(Long sellerId, TransactionRequest request, boolean isExternal) {
-        Long userId = request.userId();
-        String lockKey = String.format("transaction:%d", userId);
+    public PaymentResponse payTransaction(TransactionRequest request, boolean isExternal) {
+        String lockKey = String.format("pay:%d", request.userId());
 
         try {
-            tryLockOrThrow(lockKey);
-            validateTransactionStatus(userId);
-            validatePayBalance(userId, request.amount());
+            distributedLock.tryLockOrThrow(lockKey);
 
-            return createTransaction(sellerId, request);
-        } finally {
-            redisLock.unlock(lockKey);
-        }
-    }
-
-    @Override
-    public TransactionResponse refundTransaction(Long sellerId, TransactionRequest request) {
-        Long userId = request.userId();
-        String lockKey = String.format("refund:%d", userId);
-
-        try {
-            tryLockOrThrow(lockKey);
-            validateAmount(request.amount());
-            Pay pay = payRepository.findByAccountUserId(userId)
+            Pay pay = payRepository.findByUserId(request.userId())
                     .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
 
-            pay = pay.toBuilder()
-                    .balance(pay.getBalance() + request.amount())
-                    .build();
+            validateTransactionStatus(request.userId(), request.orderId());
+
+            if (request.pointToUse() > 0) {
+                pointService.PointsToUse(request.userId(), request.pointToUse());
+            }
+
+            long finalAmount = request.amount() - request.pointToUse();
+            pay.validatePay(finalAmount).success(finalAmount);
             payRepository.save(pay);
 
-            return createTransaction(sellerId, request);
+            return createPayTransaction(request);
         } finally {
-            redisLock.unlock(lockKey);
+            distributedLock.unlock(lockKey);
         }
     }
 
-    // 금액 검증 -> 충전/환불
-    private void validateAmount(Long amount) {
-        if (amount <= 0) {
-            throw new ApplicationException(PayErrorCode.INVALID_PAY_INPUT);
-        }
-        if (amount % MINIMUM_CHARGE_UNIT != 0) {
-            throw new ApplicationException(PayErrorCode.INVALID_CHARGE_UNIT);
-        }
-    }
-
-    // 잔액 검증 -> 결제
     @Override
-    public void validatePayBalance(Long userId, Long amount) {
-        Pay pay = payRepository.findByAccountUserId(userId)
-                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
-        if (pay.getBalance() < amount) {
-            throw new ApplicationException(PayErrorCode.INSUFFICIENT_BALANCE);
-        }
-    }
-
-    // 트랜잭션 생성 -> 결제/환불
-    @Override
-    public TransactionResponse createTransaction(Long sellerId, TransactionRequest request) {
-        Long userId = request.userId();
-        TransactionRequest transactionRequest = new TransactionRequest(
-                userId,
-                sellerId,
-                request.transactionType(),
-                request.amount(),
-                request.reason()
+    public PaymentResponse createPayTransaction(TransactionRequest request) {
+        PaymentRequest paymentRequest = new PaymentRequest(
+                request.userId(),
+                request.orderId(),
+                request.orderName(),
+                request.sellerId(),
+                request.amount() - request.pointToUse()
         );
-        TransactionResponse transactionResponse = transactionServiceClient.createTransaction(transactionRequest);
-        return TransactionResponse.from(transactionResponse);
+
+        TransactionResponse response = transactionServiceClient.createPayTransaction(paymentRequest).getData();
+        String token = jwtProvider.createAccessToken(response.transactionId());
+
+        return PaymentResponse.from(response, token);
     }
 
-    // Redis 락 처리
-    private void tryLockOrThrow(String lockKey) {
-        if (!redisLock.tryLock(lockKey, LOCK_TIMEOUT_MS)) {
-            throw new ApplicationException(PayErrorCode.CONCURRENT_UPDATE);
+    @Override
+    public RefundResponse refundTransaction(TransactionRequest request) {
+        String lockKey = String.format("refund:%d", request.userId());
+
+        try {
+            distributedLock.tryLockOrThrow(lockKey);
+
+            Pay pay = payRepository.findByUserId(request.userId())
+                    .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
+
+            pay.validateAmount(request.amount()).updatedBalance(request.amount());
+            payRepository.save(pay);
+
+            return createRefundTransaction(request);
+        } finally {
+            distributedLock.unlock(lockKey);
         }
     }
 
-    private void validateTransactionStatus(Long userId) {
+    @Override
+    public RefundResponse createRefundTransaction(TransactionRequest request) {
+        return null;
+    }
+
+    private void validateTransactionStatus(Long userId, Long orderId) {
         boolean existsPendingOrSuccessTransaction = transactionServiceClient.existsByUserIdAndStatusIn(
-                userId, List.of(Status.PENDING, Status.SUCCESS)
+                userId, orderId, List.of(Status.PENDING, Status.SUCCESS)
         );
         if (existsPendingOrSuccessTransaction) {
             throw new ApplicationException(PayErrorCode.DUPLICATE_TRANSACTION);

@@ -37,18 +37,10 @@ public class AccountUserController {
         return ApiResponse.ok(response);
     }
 
-    // 자신의 특정 계좌 수정
-    @PutMapping("/{accountId}")
-    public ApiResponse<AccountUserResponse> updateAccountByAccountId(
-            @PathVariable Long accountId, @RequestBody AccountUserRequest request) {
-        AccountUserResponse response = accountUserService.updateAccountByAccountId(accountId, request);
-        return ApiResponse.ok(response);
-    }
-
-    // 자신의 계좌 삭제(계좌 상태:INACTIVE)
+    // 자신의 계좌 삭제
     @DeleteMapping("/{accountId}")
-    public ApiResponse<Void> deactivateAccountByAccountId(@PathVariable Long accountId) {
-        accountUserService.deactivateAccountByAccountId(accountId);
+    public ApiResponse<Void> deleteAccountByAccountId(@PathVariable Long accountId) {
+        accountUserService.deleteAccount(accountId);
         return ApiResponse.ok();
     }
 }

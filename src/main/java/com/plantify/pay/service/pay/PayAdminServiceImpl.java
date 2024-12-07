@@ -1,10 +1,6 @@
 package com.plantify.pay.service.pay;
 
-import com.plantify.pay.domain.dto.pay.PayAdminRequest;
 import com.plantify.pay.domain.dto.pay.PayAdminResponse;
-import com.plantify.pay.domain.entity.Pay;
-import com.plantify.pay.global.exception.ApplicationException;
-import com.plantify.pay.global.exception.errorcode.PayErrorCode;
 import com.plantify.pay.repository.PayRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,21 +23,8 @@ public class PayAdminServiceImpl implements PayAdminService {
 
     @Override
     public List<PayAdminResponse> getPaysByUserId(Long userId) {
-        return payRepository.findByAccountUserId(userId).stream()
+        return payRepository.findByUserId(userId).stream()
                 .map(PayAdminResponse::from)
                 .toList();
-    }
-
-    @Override
-    public PayAdminResponse updatePayByPayIdAndUserId(Long payId, Long userId, PayAdminRequest request) {
-        Pay pay = payRepository.findByPayIdAndAccountUserId(payId, userId)
-                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
-
-        pay = pay.toBuilder()
-                .payStatus(request.payStatus())
-                .build();
-
-        payRepository.save(pay);
-        return PayAdminResponse.from(pay);
     }
 }

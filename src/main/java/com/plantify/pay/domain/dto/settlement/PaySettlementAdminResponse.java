@@ -8,21 +8,21 @@ import java.time.LocalDateTime;
 public record PaySettlementAdminResponse(
         Long paySettlementId,
         Long payId,
-        Long userId,
         TransactionType transactionType,
-        Long transactionAmount,
+        Long amount,
         Long balanceAfter,
-        LocalDateTime transactionDate
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
     public static PaySettlementAdminResponse from(PaySettlement paySettlement) {
         return new PaySettlementAdminResponse(
                 paySettlement.getPaySettlementId(),
                 paySettlement.getPay().getPayId(),
-                paySettlement.getPay().getAccount().getUserId(),
                 paySettlement.getTransactionType(),
-                paySettlement.getTransactionAmount(),
+                paySettlement.getAmount(),
                 paySettlement.getBalanceAfter(),
-                paySettlement.getTransactionDate()
+                paySettlement.getCreatedAt(),
+                paySettlement.getUpdatedAt()
         );
     }
 }

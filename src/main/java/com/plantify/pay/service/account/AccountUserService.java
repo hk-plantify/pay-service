@@ -10,6 +10,5 @@ public interface AccountUserService {
     List<AccountUserResponse> getAllAccounts();
     AccountUserResponse getAccountByAccountId(Long accountId);
     AccountUserResponse createAccount(AccountUserRequest request);
-    AccountUserResponse updateAccountByAccountId(Long accountId, AccountUserRequest request);
-    void deactivateAccountByAccountId(Long accountId);
+    void deleteAccount(Long accountId);
 }

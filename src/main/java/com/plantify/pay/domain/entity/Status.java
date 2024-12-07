@@ -1,6 +1,8 @@
 package com.plantify.pay.domain.entity;
 
-public enum Status {
+import java.io.Serializable;
+
+public enum Status implements Serializable {
     PENDING,
     SUCCESS,
     CANCELLED,

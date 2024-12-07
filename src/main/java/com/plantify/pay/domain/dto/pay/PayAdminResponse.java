@@ -7,22 +7,20 @@ import java.time.LocalDateTime;
 
 public record PayAdminResponse(
         Long payId,
-        Long accountId,
+        Long userId,
         Long payNum,
         LocalDateTime expiryDate,
         Long balance,
-        Status payStatus,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
     public static PayAdminResponse from(Pay pay) {
         return new PayAdminResponse(
                 pay.getPayId(),
-                pay.getAccount().getAccountId(),
+                pay.getUserId(),
                 pay.getPayNum(),
                 pay.getExpiryDate(),
                 pay.getBalance(),
-                pay.getPayStatus(),
                 pay.getCreatedAt(),
                 pay.getUpdatedAt()
         );

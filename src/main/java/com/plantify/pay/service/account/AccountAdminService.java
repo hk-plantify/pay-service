@@ -9,6 +9,6 @@ public interface AccountAdminService {
 
     List<AccountAdminResponse> getAllAccounts();
     List<AccountAdminResponse> getAccountsByUserId(Long userId);
-    AccountAdminResponse updateAccountByAccountIdAndUserId(Long accountId, Long userId, AccountAdminRequest request);
-    AccountAdminResponse deactivateAccountByAccountIdAndUserId(Long accountId, Long userId);
+    AccountAdminResponse updateAccountByAccountIdAndUserId(Long accountId, AccountAdminRequest request);
+    void deleteAccountByAccountIdAndUserId(Long accountId, Long userId);
 }
