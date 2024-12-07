@@ -21,7 +21,7 @@ public class PointAdminServiceImpl implements PointAdminService {
     public List<PointAdminResponse> getAllUserPoints() {
         return pointRepository.findAll().stream()
                 .map(PointAdminResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

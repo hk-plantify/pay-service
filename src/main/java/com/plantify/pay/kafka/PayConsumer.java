@@ -14,19 +14,18 @@ public class PayConsumer {
 
     private final PayTransactionStatusService payTransactionStatusService;
 
-    private static final String SUCCESS_STATUS = "SUCCESS";
-    private static final String FAILED_STATUS = "FAILED";
-
     @KafkaListener(
             topics = "${spring.kafka.topic.transaction-status}",
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory"
+
     )
     public void handleTransactionStatus(TransactionStatusMessage message) {
+        log.info("Received TransactionStatusMessage: {}", message);
         try {
             switch (message.status()) {
-                case SUCCESS_STATUS -> payTransactionStatusService.processSuccessfulTransaction(message);
-                case FAILED_STATUS -> payTransactionStatusService.processFailedTransaction(message);
+                case SUCCESS -> payTransactionStatusService.processSuccessfulTransaction(message);
+                case FAILED -> payTransactionStatusService.processFailedTransaction(message);
                 default -> log.warn("Unknown status: {}", message.status());
             }
         } catch (Exception e) {
