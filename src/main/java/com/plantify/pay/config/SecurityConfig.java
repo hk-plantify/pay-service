@@ -23,7 +23,13 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/v1/pay",
+                                "/v1/pay/**",
+                                "/v1/payments",
+                                "/v1/payments/**",
+                                "/payments.html",
+                                "/payments?token="
                         ).permitAll()
                         .requestMatchers("/v1/admin/**")
                         .hasAnyRole("MANAGER", "ADMIN")

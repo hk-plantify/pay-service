@@ -19,21 +19,20 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka.default.svc.cluster.local:9092
     consumer:
       group-id: pay-service-group
       auto-offset-reset: earliest
-#      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
         spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.ByteArrayDeserializer
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     topic:
-      transaction-status: transaction.status-7
+      transaction-status: transaction.status
   data:
     redis:
-      host: localhost
+      host: redis-master.default.svc.cluster.local
       port: 6379
       password:
       timeout: 2000ms
@@ -45,14 +44,11 @@ spring:
 
 auth:
   service:
-    url: http://localhost:8888
+    url: http://auth-service.auth.svc:8080
 transaction:
   service:
-    url: http://localhost:2222
+    url: http://transaction-service.transaction.svc:8080
 
 jwt:
   secret: ENC(29vK1PECW2Jls40pgFDgITil5EnUObTxvycoWtm7Orm+Xj93YE5bZHjPKPLcaQNsGnddf5uX+lc=)
-  access-token-expiration: ENC(/T++6ZbhvDUhaZgscOQ/oKJZzHHk3VQ9)
-#  ENC(ch/UXDWKupu5PnMpcI3DEg==)
-server:
-  port: 1111
+  access-token-expiration: ENC(ch/UXDWKupu5PnMpcI3DEg==)
