@@ -23,7 +23,6 @@ public record PaymentResponse(
 ) {
 
     public static PaymentResponse from(TransactionResponse transactionResponse, String token) {
-        log.info("Transaction ID: {}", transactionResponse.transactionId());
         return new PaymentResponse(
                 transactionResponse.transactionId(),
                 transactionResponse.userId(),

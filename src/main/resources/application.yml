@@ -19,7 +19,7 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   kafka:
-    bootstrap-servers: kafka.default.svc.cluster.local:9092
+    bootstrap-servers: kafka.kafka.svc.cluster.local:9092
     consumer:
       group-id: pay-service-group
       auto-offset-reset: earliest
@@ -32,7 +32,7 @@ spring:
       transaction-status: transaction.status
   data:
     redis:
-      host: redis-master.default.svc.cluster.local
+      host: redis-master.kafka.svc.cluster.local
       port: 6379
       password:
       timeout: 2000ms

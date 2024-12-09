@@ -26,7 +26,6 @@ public class PayTransactionStatusServiceImpl implements PayTransactionStatusServ
 
     // 성공
     public void processSuccessfulTransaction(TransactionStatusMessage message) {
-        log.info("Received TransactionStatusMessage: {}", message);
         String lockKey = String.format("pay:%d", message.userId());
 
         try {

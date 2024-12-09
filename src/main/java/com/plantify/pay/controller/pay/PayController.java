@@ -24,14 +24,11 @@ public class PayController {
 
     // 페이 결제 요청
     @PostMapping("/payment")
-    public ApiResponse<PaymentResponse> paymentPending(
+    public void paymentPending(
             @RequestBody TransactionRequest request, HttpServletResponse response) throws IOException {
         PaymentResponse paymentResponse = payService.payment(request);
-        String redirectUrl = String.format("http://localhost:1111/payments?token=%s", paymentResponse.token());
-        log.info("Redirecting to URL: {}", redirectUrl);
-        log.info("token: {}", paymentResponse.token());
-//        response.sendRedirect(redirectUrl);
-        return ApiResponse.ok(paymentResponse);
+        String redirectUrl = String.format("https://plantify/payments?token=%s", paymentResponse.token());
+        response.sendRedirect(redirectUrl);
     }
 
     // 트랜잭션 상태 검증
