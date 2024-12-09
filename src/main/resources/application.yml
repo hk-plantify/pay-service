@@ -26,10 +26,13 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
         spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.ByteArrayDeserializer
+        security.protocol: SASL_PLAINTEXT
+        sasl.mechanism: SCRAM-SHA-256
+        sasl.jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username="user1" password="mzdCmxMG42";
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     topic:
-      transaction-status: transaction.status
+      transaction-status: transaction-status
   data:
     redis:
       host: redis-master.kafka.svc.cluster.local
