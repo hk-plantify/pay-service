@@ -24,15 +24,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
-                                "/v1/pay",
-                                "/v1/pay/**",
-                                "/v1/payments",
-                                "/v1/payments/**",
-                                "/payments.html",
-                                "/payments?token="
+                                "/v1/admin/**",
+                                "/"
                         ).permitAll()
-                        .requestMatchers("/v1/admin/**")
-                        .hasAnyRole("MANAGER", "ADMIN")
                         .anyRequest()
                         .authenticated()
                 )
