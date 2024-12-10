@@ -9,5 +9,6 @@ public interface PayInternalService {
     PaymentResponse payTransaction(TransactionRequest request, boolean isExternal);
     RefundResponse refundTransaction(TransactionRequest request);
     PaymentResponse createPayTransaction(TransactionRequest request);
+    ProcessPaymentResponse processPayment(String token, Long pointToUse);
     RefundResponse createRefundTransaction(TransactionRequest request);
 }

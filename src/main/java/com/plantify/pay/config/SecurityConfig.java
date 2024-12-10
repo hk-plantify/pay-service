@@ -25,8 +25,13 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/v1/admin/**",
-                                "/"
+                                "/",
+                                "/v1/pay/check",
+                                "/v1/pay/payment",
+                                "/v1/pay/payment/verify"
                         ).permitAll()
+                        .requestMatchers("/v1/pay/settlements/**")
+                        .hasAnyRole("USER")
                         .anyRequest()
                         .authenticated()
                 )

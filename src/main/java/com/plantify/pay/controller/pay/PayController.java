@@ -1,15 +1,13 @@
 package com.plantify.pay.controller.pay;
 
-import com.plantify.pay.domain.dto.kafka.PaymentResponse;
-import com.plantify.pay.domain.dto.kafka.RefundResponse;
-import com.plantify.pay.domain.dto.kafka.TransactionRequest;
-import com.plantify.pay.domain.dto.kafka.TransactionStatusResponse;
+import com.plantify.pay.domain.dto.kafka.*;
+import com.plantify.pay.domain.dto.pay.PayBalanceResponse;
 import com.plantify.pay.global.response.ApiResponse;
 import com.plantify.pay.service.pay.PayService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -22,19 +20,29 @@ public class PayController {
 
     private final PayService payService;
 
-    // 페이 결제 요청
+    @Value("${client.url}")
+    private String clientURL;
+
+    // 페이 결제 요청(Pending)
     @PostMapping("/payment")
-    public void paymentPending(
+    public void initiatePayment(
             @RequestBody TransactionRequest request, HttpServletResponse response) throws IOException {
-        PaymentResponse paymentResponse = payService.payment(request);
-        String redirectUrl = String.format("https://plantify/payments?token=%s", paymentResponse.token());
+        PaymentResponse paymentResponse = payService.initiatePayment(request);
+        String redirectUrl = String.format("%s/?payments=%s", clientURL, paymentResponse.token());
         response.sendRedirect(redirectUrl);
     }
 
     // 트랜잭션 상태 검증
-    @GetMapping("/payment/{token}")
-    public ApiResponse<TransactionStatusResponse> getTransactionStatus(@PathVariable String token) {
+    @GetMapping("/payment/verify")
+    public ApiResponse<TransactionStatusResponse> getTransactionStatus(@RequestHeader String token) {
         TransactionStatusResponse status = payService.getTransactionStatus(token);
+        return ApiResponse.ok(status);
+    }
+
+    // 토큰 검증 및 결제 요청
+    @GetMapping("/payment")
+    public ApiResponse<ProcessPaymentResponse> verifyAndProcessPayment(@RequestHeader String token, @RequestParam Long pointToUse) {
+        ProcessPaymentResponse status = payService.verifyAndProcessPayment(token, pointToUse);
         return ApiResponse.ok(status);
     }
 
@@ -42,6 +50,13 @@ public class PayController {
     @PostMapping("/refund")
     public ApiResponse<RefundResponse> refund(@RequestBody TransactionRequest request) {
         RefundResponse response = payService.refund(request);
+        return ApiResponse.ok(response);
+    }
+
+    // 페이 잔액과 금액 비교
+    @GetMapping("/check")
+    public ApiResponse<PayBalanceResponse> checkPayBalance(@RequestParam Long amount) {
+        PayBalanceResponse response = payService.checkPayBalance(amount);
         return ApiResponse.ok(response);
     }
 }

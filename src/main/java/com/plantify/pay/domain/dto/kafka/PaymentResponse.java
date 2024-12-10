@@ -1,7 +1,5 @@
 package com.plantify.pay.domain.dto.kafka;
 
-import com.plantify.pay.domain.entity.Status;
-import com.plantify.pay.domain.entity.TransactionType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -11,7 +9,7 @@ public record PaymentResponse(
         Long transactionId,
         Long userId,
         Long paymentId,
-        Long orderId,
+        String orderId,
         String orderName,
         Long sellerId,
         Long amount,

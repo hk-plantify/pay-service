@@ -34,4 +34,8 @@ public class PaySettlement extends BaseEntity {
 
     @Column(nullable = false)
     private Long balanceAfter;
+
+    public static PaySettlement create(Pay pay, TransactionType transactionType, Long amount, Long balanceAfter) {
+        return new PaySettlement(null, pay, transactionType, amount, balanceAfter);
+    }
 }

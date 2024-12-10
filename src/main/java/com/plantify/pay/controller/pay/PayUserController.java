@@ -1,19 +1,12 @@
 package com.plantify.pay.controller.pay;
 
 import com.plantify.pay.domain.dto.account.AccountUserRequest;
-import com.plantify.pay.domain.dto.kafka.PaymentResponse;
-import com.plantify.pay.domain.dto.kafka.TransactionRequest;
-import com.plantify.pay.domain.dto.kafka.RefundResponse;
-import com.plantify.pay.domain.dto.kafka.TransactionStatusResponse;
 import com.plantify.pay.domain.dto.pay.PayUserRequest;
 import com.plantify.pay.domain.dto.pay.PayUserResponse;
 import com.plantify.pay.global.response.ApiResponse;
 import com.plantify.pay.service.pay.PayUserService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor

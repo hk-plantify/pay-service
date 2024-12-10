@@ -2,15 +2,17 @@ package com.plantify.pay.domain.dto.kafka;
 
 import java.time.LocalDateTime;
 
-public record TransactionStatusResponse(
+public record ProcessPaymentResponse(
         Long transactionId,
         Long userId,
-        Long sellerId,
+        Long paymentId,
         String orderId,
         String orderName,
+        Long sellerId,
+        Long amount,
+        Long pointToUse,
         String transactionType,
         String status,
-        Long amount,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

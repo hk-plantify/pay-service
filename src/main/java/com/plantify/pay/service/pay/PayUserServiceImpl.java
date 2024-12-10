@@ -30,6 +30,7 @@ public class PayUserServiceImpl implements PayUserService {
     private final AccountRepository accountRepository;
     private final PointRepository pointRepository;
 
+
     @Override
     @Transactional(readOnly = true)
     public PayUserResponse getPay() {
@@ -38,7 +39,6 @@ public class PayUserServiceImpl implements PayUserService {
                 .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
         return PayUserResponse.from(pay);
     }
-
     @Override
     @Transactional
     public PayUserResponse createPay(AccountUserRequest request) {
