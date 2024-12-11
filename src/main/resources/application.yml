@@ -38,7 +38,7 @@ spring:
     redis:
       host: redis-master.kafka.svc.cluster.local
       port: 6379
-      password:
+      password: NRCwHXG7HR
       timeout: 2000ms
       lettuce:
         pool:
