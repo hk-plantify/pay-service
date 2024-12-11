@@ -59,6 +59,3 @@ jwt:
 
 client:
   url: ENC(PVGBoG2yiWsv0Ao8EcaGUysoSXRKeRsZXGYAdUiTSmlPV/iJmmHFSbUbA/hBYJ0Yfa4xXrsllYI=)
-
-server:
-  port: 1111
