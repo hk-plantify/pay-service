@@ -1,10 +1,7 @@
 package com.plantify.pay.domain.dto.kafka;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDateTime;
 
-@Slf4j
 public record PaymentResponse(
         Long transactionId,
         Long userId,
@@ -17,10 +14,11 @@ public record PaymentResponse(
         String status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        String token
+        String token,
+        String redirectUri
 ) {
 
-    public static PaymentResponse from(TransactionResponse transactionResponse, String token) {
+    public static PaymentResponse from(TransactionResponse transactionResponse, String token, String redirectUri) {
         return new PaymentResponse(
                 transactionResponse.transactionId(),
                 transactionResponse.userId(),
@@ -33,7 +31,8 @@ public record PaymentResponse(
                 transactionResponse.status(),
                 transactionResponse.createdAt(),
                 transactionResponse.updatedAt(),
-                token
+                token,
+                redirectUri
         );
     }
 }

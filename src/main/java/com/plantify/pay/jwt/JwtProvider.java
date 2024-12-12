@@ -50,6 +50,12 @@ public class JwtProvider {
                     .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new ApplicationException(AuthErrorCode.EXPIRED_TOKEN);
+        } catch (UnsupportedJwtException e) {
+            throw new ApplicationException(AuthErrorCode.UNSUPPORTED_TOKEN);
+        } catch (MalformedJwtException | IllegalArgumentException e) {
+            throw new ApplicationException(AuthErrorCode.INVALID_TOKEN);
         } catch (JwtException e) {
             throw new ApplicationException(AuthErrorCode.INVALID_TOKEN);
         }
@@ -59,9 +65,17 @@ public class JwtProvider {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            throw new ApplicationException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (JwtException e) {
-            log.error("Token validation failed: " + e.getMessage(), e);
-            return false;
+            throw new ApplicationException(AuthErrorCode.INVALID_TOKEN);
         }
+    }
+
+    public String extractTokenFromHeader(String header) {
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        throw new ApplicationException(AuthErrorCode.INVALID_TOKEN);
     }
 }

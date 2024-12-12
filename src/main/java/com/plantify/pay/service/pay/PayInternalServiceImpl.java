@@ -2,6 +2,7 @@ package com.plantify.pay.service.pay;
 
 import com.plantify.pay.client.TransactionServiceClient;
 import com.plantify.pay.domain.dto.kafka.*;
+import com.plantify.pay.domain.dto.settlement.PaySettlementRequest;
 import com.plantify.pay.domain.entity.Pay;
 import com.plantify.pay.domain.entity.PaySettlement;
 import com.plantify.pay.domain.entity.Status;
@@ -48,7 +49,14 @@ public class PayInternalServiceImpl implements PayInternalService {
             pay.validateAmount(amount).updatedBalance(amount);
             payRepository.save(pay);
 
-            paySettlementUserService.savePaySettlement(pay, TransactionType.DEPOSIT, amount);
+            PaySettlementRequest request = new PaySettlementRequest(
+                    userId,
+                    TransactionType.DEPOSIT,
+                    null,
+                    null,
+                    amount
+            );
+            paySettlementUserService.savePaySettlement(request);
 
             return pay;
         } finally {
@@ -71,18 +79,22 @@ public class PayInternalServiceImpl implements PayInternalService {
 
     @Override
     public PaymentResponse createPayTransaction(TransactionRequest request) {
+        payRepository.findByUserId(request.userId())
+                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
+
         PaymentRequest paymentRequest = new PaymentRequest(
                 request.userId(),
                 UUID.randomUUID().toString(),
                 request.orderName(),
                 request.sellerId(),
-                request.amount()
+                request.amount(),
+                request.redirectUri()
         );
 
         TransactionResponse response = transactionServiceClient.createPendingTransaction(paymentRequest).getData();
         String token = jwtProvider.createAccessToken(response.transactionId());
 
-        return PaymentResponse.from(response, token);
+        return PaymentResponse.from(response, token, request.redirectUri());
     }
 
     @Override
@@ -106,7 +118,14 @@ public class PayInternalServiceImpl implements PayInternalService {
         pay.validatePay(finalAmount).success(finalAmount);
         payRepository.save(pay);
 
-        paySettlementUserService.savePaySettlement(pay, TransactionType.PAYMENT, finalAmount);
+        PaySettlementRequest request = new PaySettlementRequest(
+                transactionResponse.userId(),
+                TransactionType.PAYMENT,
+                transactionResponse.orderId(),
+                transactionResponse.orderName(),
+                transactionResponse.amount()
+        );
+        paySettlementUserService.savePaySettlement(request);
 
         TransactionResponse response = transactionServiceClient.createPayTransaction(
                 new PayTransactionRequest(transactionId)).getData();
@@ -122,6 +141,7 @@ public class PayInternalServiceImpl implements PayInternalService {
                 pointToUse,
                 response.transactionType(),
                 response.status(),
+                response.redirectUri(),
                 response.createdAt(),
                 response.updatedAt()
         );

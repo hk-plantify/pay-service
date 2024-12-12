@@ -5,5 +5,6 @@ public record PaymentRequest(
         String orderId,
         String orderName,
         Long sellerId,
-        Long amount
+        Long amount,
+        String redirectUri
 ) {}

@@ -29,13 +29,12 @@ public class PaySettlement extends BaseEntity {
     @Column(nullable = false)
     private TransactionType transactionType;
 
+    @Column
+    private String orderId;
+
+    @Column
+    private String orderName;
+
     @Column(nullable = false)
     private Long amount;
-
-    @Column(nullable = false)
-    private Long balanceAfter;
-
-    public static PaySettlement create(Pay pay, TransactionType transactionType, Long amount, Long balanceAfter) {
-        return new PaySettlement(null, pay, transactionType, amount, balanceAfter);
-    }
 }

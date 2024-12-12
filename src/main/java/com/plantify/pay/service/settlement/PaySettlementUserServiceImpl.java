@@ -1,12 +1,15 @@
 package com.plantify.pay.service.settlement;
 
+import com.plantify.pay.domain.dto.settlement.PaySettlementRequest;
 import com.plantify.pay.domain.entity.Pay;
 import com.plantify.pay.domain.entity.TransactionType;
+import com.plantify.pay.global.exception.errorcode.PayErrorCode;
 import com.plantify.pay.global.util.UserInfoProvider;
 import com.plantify.pay.domain.dto.settlement.PaySettlementUserResponse;
 import com.plantify.pay.domain.entity.PaySettlement;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.SettlementErrorCode;
+import com.plantify.pay.repository.PayRepository;
 import com.plantify.pay.repository.PaySettlementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ public class PaySettlementUserServiceImpl implements PaySettlementUserService {
 
     private final PaySettlementRepository paySettlementRepository;
     private final UserInfoProvider userInfoProvider;
+    private final PayRepository payRepository;
 
     @Override
     public Page<PaySettlementUserResponse> getAllPaySettlements(Pageable pageable) {
@@ -45,8 +49,12 @@ public class PaySettlementUserServiceImpl implements PaySettlementUserService {
 
     @Override
     @Transactional
-    public void savePaySettlement(Pay pay, TransactionType transactionType, Long amount) {
-        PaySettlement paySettlement = PaySettlement.create(pay, transactionType, amount, pay.getBalance());
-        paySettlementRepository.save(paySettlement);
+    public void savePaySettlement(PaySettlementRequest request) {
+        Long userId = request.userId();
+        Pay pay = payRepository.findByUserId(userId)
+                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
+
+        PaySettlement savedPaySettlement = request.toEntity(pay);
+        paySettlementRepository.save(savedPaySettlement);
     }
 }

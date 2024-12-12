@@ -13,6 +13,7 @@ public record ProcessPaymentResponse(
         Long pointToUse,
         String transactionType,
         String status,
+        String redirectUri,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

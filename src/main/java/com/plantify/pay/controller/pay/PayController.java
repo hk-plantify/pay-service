@@ -20,21 +20,23 @@ public class PayController {
 
     private final PayService payService;
 
-    @Value("${client.url}")
-    private String clientURL;
+    @Value("${client.pay.url}")
+    private String clientPayUrl;
 
     // 페이 결제 요청(Pending)
     @PostMapping("/payment")
     public void initiatePayment(
             @RequestBody TransactionRequest request, HttpServletResponse response) throws IOException {
         PaymentResponse paymentResponse = payService.initiatePayment(request);
-        String redirectUrl = String.format("%s/?payments=%s", clientURL, paymentResponse.token());
+        String redirectUrl = String.format("%s/?payments=%s", clientPayUrl, paymentResponse.token());
+        log.info("{}", paymentResponse.token());
         response.sendRedirect(redirectUrl);
     }
 
     // 트랜잭션 상태 검증
     @GetMapping("/payment/verify")
-    public ApiResponse<TransactionStatusResponse> getTransactionStatus(@RequestHeader String token) {
+    public ApiResponse<TransactionStatusResponse> getTransactionStatus(
+            @RequestHeader String token) {
         TransactionStatusResponse status = payService.getTransactionStatus(token);
         return ApiResponse.ok(status);
     }
@@ -54,9 +56,9 @@ public class PayController {
     }
 
     // 페이 잔액과 금액 비교
-    @GetMapping("/check")
-    public ApiResponse<PayBalanceResponse> checkPayBalance(@RequestParam Long amount) {
-        PayBalanceResponse response = payService.checkPayBalance(amount);
+    @PostMapping("/check")
+    public ApiResponse<PayBalanceResponse> checkPayBalance(@RequestBody PayBalanceRequest request) {
+        PayBalanceResponse response = payService.checkPayBalance(request);
         return ApiResponse.ok(response);
     }
 }

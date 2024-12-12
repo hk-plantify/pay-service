@@ -49,6 +49,7 @@ public class AccountUserServiceImpl implements AccountUserService {
         }
 
         Long userId = userInfoProvider.getUserInfo().userId();
+
         Pay pay = payRepository.findByUserId(userId)
                 .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
 

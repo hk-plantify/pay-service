@@ -11,6 +11,7 @@ public record TransactionStatusResponse(
         String transactionType,
         String status,
         Long amount,
+        String redirectUri,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

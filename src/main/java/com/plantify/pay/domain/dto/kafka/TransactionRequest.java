@@ -6,6 +6,7 @@ public record TransactionRequest(
         String orderName,
         Long amount,
         String transactionType,
-        String reason
+        String reason,
+        String redirectUri
 ) {
 }

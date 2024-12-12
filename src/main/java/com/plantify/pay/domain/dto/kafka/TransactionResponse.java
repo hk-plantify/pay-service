@@ -13,6 +13,7 @@ public record TransactionResponse(
         String transactionType,
         String status,
         String reason,
+        String redirectUri,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

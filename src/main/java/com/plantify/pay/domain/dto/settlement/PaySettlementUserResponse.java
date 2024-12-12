@@ -10,7 +10,8 @@ public record PaySettlementUserResponse(
         Long payId,
         TransactionType transactionType,
         Long amount,
-        Long balanceAfter,
+        String orderId,
+        String orderName,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
@@ -20,7 +21,8 @@ public record PaySettlementUserResponse(
                 paySettlement.getPay().getPayId(),
                 paySettlement.getTransactionType(),
                 paySettlement.getAmount(),
-                paySettlement.getBalanceAfter(),
+                paySettlement.getOrderId(),
+                paySettlement.getOrderName(),
                 paySettlement.getCreatedAt(),
                 paySettlement.getUpdatedAt()
         );

@@ -13,4 +13,5 @@ public interface PaySettlementRepository extends JpaRepository<PaySettlement, Lo
     Optional<PaySettlement> findByPayUserId(Long userId);
     Page<PaySettlement> findByPayUserId(Long userId, Pageable pageable);
     Optional<PaySettlement> findByTransactionTypeAndPayUserId(TransactionType transactionType, Long userId);
+    Optional<PaySettlement> findByOrderId(String orderId);
 }

@@ -2,6 +2,7 @@ package com.plantify.pay.service.pay;
 
 import com.plantify.pay.client.TransactionServiceClient;
 import com.plantify.pay.domain.dto.kafka.*;
+import com.plantify.pay.domain.dto.pay.ExternalSettlementResponse;
 import com.plantify.pay.domain.dto.pay.PayBalanceResponse;
 import com.plantify.pay.domain.entity.Pay;
 import com.plantify.pay.domain.entity.PaySettlement;
@@ -29,8 +30,6 @@ public class PayServiceImpl implements PayService {
     private final PayInternalService payInternalService;
     private final UserInfoProvider userInfoProvider;
     private final PayRepository payRepository;
-    private final PointService pointService;
-    private final PaySettlementUserService paySettlementUserService;
 
     @Override
     @Transactional
@@ -41,6 +40,7 @@ public class PayServiceImpl implements PayService {
     @Override
     @Transactional
     public TransactionStatusResponse getTransactionStatus(String token) {
+//        String token = jwtProvider.extractTokenFromHeader(authorizationHeader);
         if (token == null || !jwtProvider.validateToken(token)) {
             throw new ApplicationException(AuthErrorCode.INVALID_TOKEN);
         }
@@ -57,6 +57,7 @@ public class PayServiceImpl implements PayService {
                 response.transactionType(),
                 response.status(),
                 response.amount(),
+                response.redirectUri(),
                 response.createdAt(),
                 response.updatedAt()
         );
@@ -65,6 +66,7 @@ public class PayServiceImpl implements PayService {
     @Override
     @Transactional
     public ProcessPaymentResponse verifyAndProcessPayment(String token, Long pointToUse) {
+//        String token = jwtProvider.extractTokenFromHeader(authorizationHeader);
         return payInternalService.processPayment(token, pointToUse);
     }
 
@@ -75,12 +77,11 @@ public class PayServiceImpl implements PayService {
     }
 
     @Override
-    public PayBalanceResponse checkPayBalance(Long amount) {
-        Long userId = userInfoProvider.getUserInfo().userId();
-        Pay pay = payRepository.findByUserId(userId)
+    public PayBalanceResponse checkPayBalance(PayBalanceRequest request) {
+        Pay pay = payRepository.findByUserId(request.userId())
                 .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
 
-        if (amount > pay.getBalance()) {
+        if (request.amount() > pay.getBalance()) {
             throw new ApplicationException(PayErrorCode.INSUFFICIENT_BALANCE);
         }
 
