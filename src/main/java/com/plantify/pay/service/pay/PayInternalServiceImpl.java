@@ -118,6 +118,7 @@ public class PayInternalServiceImpl implements PayInternalService {
         pay.validatePay(finalAmount).success(finalAmount);
         payRepository.save(pay);
 
+        transactionServiceClient.createPayTransaction(new PayTransactionRequest(transactionId));
         PaySettlementRequest request = new PaySettlementRequest(
                 transactionResponse.userId(),
                 TransactionType.PAYMENT,
@@ -127,23 +128,20 @@ public class PayInternalServiceImpl implements PayInternalService {
         );
         paySettlementUserService.savePaySettlement(request);
 
-        TransactionResponse response = transactionServiceClient.createPayTransaction(
-                new PayTransactionRequest(transactionId)).getData();
-
         return new ProcessPaymentResponse(
-                response.transactionId(),
-                response.userId(),
-                response.paymentId(),
-                response.orderId(),
-                response.orderName(),
-                response.sellerId(),
-                response.amount(),
+                transactionId,
+                transactionResponse.userId(),
+                transactionResponse.paymentId(),
+                transactionResponse.orderId(),
+                transactionResponse.orderName(),
+                transactionResponse.sellerId(),
+                transactionResponse.amount(),
                 pointToUse,
-                response.transactionType(),
-                response.status(),
-                response.redirectUri(),
-                response.createdAt(),
-                response.updatedAt()
+                transactionResponse.transactionType(),
+                transactionResponse.status(),
+                transactionResponse.redirectUri(),
+                transactionResponse.createdAt(),
+                transactionResponse.updatedAt()
         );
     }
 
