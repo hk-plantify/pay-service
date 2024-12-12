@@ -3,6 +3,7 @@ package com.plantify.pay.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,13 +27,17 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/v1/admin/**",
                                 "/",
-                                "/v1/pay/check",
                                 "/v1/pay/payment",
                                 "/v1/pay/payment/verify",
                                 "/v1/pay/settlements/external"
                         ).permitAll()
+
                         .requestMatchers("/v1/pay/settlements/**")
                         .hasAnyRole("USER")
+
+                        .requestMatchers(HttpMethod.POST, "/v1/pay/check")
+                        .permitAll()
+
                         .anyRequest()
                         .authenticated()
                 )

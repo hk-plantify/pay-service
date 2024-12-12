@@ -4,15 +4,16 @@ import com.plantify.pay.client.TransactionServiceClient;
 import com.plantify.pay.domain.dto.kafka.*;
 import com.plantify.pay.domain.dto.pay.ExternalSettlementResponse;
 import com.plantify.pay.domain.dto.pay.PayBalanceResponse;
-import com.plantify.pay.domain.entity.Pay;
-import com.plantify.pay.domain.entity.PaySettlement;
-import com.plantify.pay.domain.entity.TransactionType;
+import com.plantify.pay.domain.entity.*;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.AuthErrorCode;
 import com.plantify.pay.global.exception.errorcode.PayErrorCode;
+import com.plantify.pay.global.exception.errorcode.PointErrorCode;
 import com.plantify.pay.global.util.UserInfoProvider;
 import com.plantify.pay.jwt.JwtProvider;
+import com.plantify.pay.repository.AccountRepository;
 import com.plantify.pay.repository.PayRepository;
+import com.plantify.pay.repository.PointRepository;
 import com.plantify.pay.service.point.PointService;
 import com.plantify.pay.service.settlement.PaySettlementUserService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,9 @@ public class PayServiceImpl implements PayService {
     private final JwtProvider jwtProvider;
     private final TransactionServiceClient transactionServiceClient;
     private final PayInternalService payInternalService;
-    private final UserInfoProvider userInfoProvider;
     private final PayRepository payRepository;
+    private final PointRepository pointRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     @Transactional
@@ -48,6 +50,13 @@ public class PayServiceImpl implements PayService {
         Long transactionId = jwtProvider.getClaims(token).get("id", Long.class);
         TransactionResponse response = transactionServiceClient.getTransactionById(transactionId).getData();
 
+        Point point = pointRepository.findByUserId(response.userId())
+                .orElseThrow(() -> new ApplicationException(PointErrorCode.POINT_NOT_FOUND));
+        Pay pay = payRepository.findByUserId(response.userId())
+                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
+        Account account = accountRepository.findByPayUserId(response.userId())
+                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
+
         return new TransactionStatusResponse(
                 response.transactionId(),
                 response.userId(),
@@ -59,7 +68,11 @@ public class PayServiceImpl implements PayService {
                 response.amount(),
                 response.redirectUri(),
                 response.createdAt(),
-                response.updatedAt()
+                response.updatedAt(),
+                point.getPointBalance(),
+                pay.getBalance(),
+                account.getAccountNum(),
+                account.getBankName()
         );
     }
 
