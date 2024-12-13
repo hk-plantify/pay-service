@@ -16,16 +16,16 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/v1/**")
+        registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000", clientBaseUrl)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
 
-        registry.addMapping("/v1/pay/**")
+        registry.addMapping("/**")
                 .allowedOrigins(clientPayUrl)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(false);
+                .allowCredentials(true);
     }
 }
