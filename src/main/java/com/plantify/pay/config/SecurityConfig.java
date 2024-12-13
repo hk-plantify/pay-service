@@ -33,6 +33,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/v1/admin/**",
                                 "/",
+                                "/v1/pay",
                                 "/v1/pay/payment",
                                 "/v1/pay/payment/verify",
                                 "/v1/pay/settlements/external",
@@ -41,7 +42,6 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/v1/pay/settlements/**",
-                                "/v1/pay",
                                 "/v1/pay/recharge"
                         ).hasAnyRole("USER")
 
