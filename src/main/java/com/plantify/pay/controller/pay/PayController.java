@@ -29,7 +29,7 @@ public class PayController {
     public void initiatePayment(
             @RequestBody TransactionRequest request, HttpServletResponse response) throws IOException {
         PaymentResponse paymentResponse = payService.initiatePayment(request);
-        String redirectUrl = String.format("%s/?payments=%s", clientPayUrl, paymentResponse.token());
+        String redirectUrl = String.format("%s?payments=%s", clientPayUrl, paymentResponse.token());
         log.info("{}", paymentResponse.token());
         response.sendRedirect(redirectUrl);
     }

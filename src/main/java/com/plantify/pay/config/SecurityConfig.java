@@ -39,12 +39,6 @@ public class SecurityConfig {
                                 "/v1/pay/settlements/external",
                                 "/v1/pay/check"
                         ).permitAll()
-
-                        .requestMatchers(
-                                "/v1/pay/settlements/**",
-                                "/v1/pay/recharge"
-                        ).hasAnyRole("USER")
-
                         .anyRequest()
                         .authenticated()
                 )
