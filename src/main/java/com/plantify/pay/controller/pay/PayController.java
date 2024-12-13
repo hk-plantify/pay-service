@@ -4,6 +4,7 @@ import com.plantify.pay.domain.dto.kafka.*;
 import com.plantify.pay.domain.dto.pay.PayBalanceResponse;
 import com.plantify.pay.global.response.ApiResponse;
 import com.plantify.pay.service.pay.PayService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,6 @@ public class PayController {
             @RequestBody TransactionRequest request, HttpServletResponse response) throws IOException {
         PaymentResponse paymentResponse = payService.initiatePayment(request);
         String redirectUrl = String.format("%s/?payments=%s", clientPayUrl, paymentResponse.token());
-        log.info("{}", paymentResponse.token());
         response.sendRedirect(redirectUrl);
     }
 

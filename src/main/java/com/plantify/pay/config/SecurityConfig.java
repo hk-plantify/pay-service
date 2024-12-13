@@ -29,14 +29,15 @@ public class SecurityConfig {
                                 "/",
                                 "/v1/pay/payment",
                                 "/v1/pay/payment/verify",
-                                "/v1/pay/settlements/external"
+                                "/v1/pay/settlements/external",
+                                "/v1/pay/check"
                         ).permitAll()
 
-                        .requestMatchers("/v1/pay/settlements/**")
-                        .hasAnyRole("USER")
-
-                        .requestMatchers(HttpMethod.POST, "/v1/pay/check")
-                        .permitAll()
+                        .requestMatchers(
+                                "/v1/pay/settlements/**",
+                                "/v1/pay",
+                                "/v1/pay/recharge"
+                        ).hasAnyRole("USER")
 
                         .anyRequest()
                         .authenticated()
