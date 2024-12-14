@@ -54,7 +54,7 @@ public class PayServiceImpl implements PayService {
                 .orElseThrow(() -> new ApplicationException(PointErrorCode.POINT_NOT_FOUND));
         Pay pay = payRepository.findByUserId(response.userId())
                 .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
-        Account account = accountRepository.findByPayUserId(response.userId())
+        Account account = accountRepository.findFirstByPayUserIdOrderByCreatedAtDesc(response.userId())
                 .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
 
         return new TransactionStatusResponse(
