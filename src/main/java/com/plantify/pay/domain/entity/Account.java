@@ -34,9 +34,6 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private AccountStatus accountStatus;
 
-    @Column(nullable = false)
-    private String accountHolder;
-
     public Account updateStatus(AccountStatus status) {
         this.accountStatus = status;
         return this;

@@ -12,7 +12,6 @@ public record AccountAdminResponse(
         Long accountNum,
         BankName bankName,
         AccountStatus accountStatus,
-        String accountHolder,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
@@ -23,7 +22,6 @@ public record AccountAdminResponse(
                 account.getAccountNum(),
                 account.getBankName(),
                 account.getAccountStatus(),
-                account.getAccountHolder(),
                 account.getCreatedAt(),
                 account.getUpdatedAt()
         );

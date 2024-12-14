@@ -9,9 +9,7 @@ import jakarta.validation.constraints.Size;
 public record AccountUserRequest(
         @Pattern(regexp = "\\d{10,14}", message = "계좌번호는 10~14자리 입니다.")
         Long accountNum,
-        BankName bankName,
-        @Size(min = 2, message = "계좌이름은 최소 2자리 입니다.")
-        String accountHolder
+        BankName bankName
 ) {
 
     public Account toEntity() {
@@ -19,7 +17,6 @@ public record AccountUserRequest(
                 .accountNum(accountNum)
                 .bankName(bankName)
                 .accountStatus(AccountStatus.ACTIVE)
-                .accountHolder(accountHolder)
                 .build();
     }
 }
