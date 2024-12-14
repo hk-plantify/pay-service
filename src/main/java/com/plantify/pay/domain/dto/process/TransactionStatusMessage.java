@@ -5,7 +5,7 @@ import com.plantify.pay.domain.entity.Status;
 public record TransactionStatusMessage(
         Long transactionId,
         Long userId,
-        Long orderId,
+        String orderId,
         Long amount,
         Status status
 ){}
