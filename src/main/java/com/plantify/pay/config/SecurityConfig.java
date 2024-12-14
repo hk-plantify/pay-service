@@ -1,6 +1,7 @@
 package com.plantify.pay.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -47,10 +48,17 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Value("${client.base.url}")
+    private String clientBaseUrl;
+
+    @Value("${client.pay.url}")
+    private String clientPayUrl;
+
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", "${client.base.url}", "${client.pay.url}"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", clientBaseUrl, clientPayUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
