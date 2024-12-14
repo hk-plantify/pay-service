@@ -1,10 +1,9 @@
 package com.plantify.pay.controller.pay;
 
-import com.plantify.pay.domain.dto.kafka.*;
+import com.plantify.pay.domain.dto.process.*;
 import com.plantify.pay.domain.dto.pay.PayBalanceResponse;
 import com.plantify.pay.global.response.ApiResponse;
 import com.plantify.pay.service.pay.PayService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +26,9 @@ public class PayController {
     // 페이 결제 요청(Pending)
     @PostMapping("/payment")
     public void initiatePayment(
-            @RequestBody TransactionRequest request, HttpServletResponse response) throws IOException {
-        PaymentResponse paymentResponse = payService.initiatePayment(request);
-        String redirectUrl = String.format("%s?payment=%s", "http://www.plantify.co.kr", paymentResponse.token());
+            @RequestBody PendingTransactionRequest request, HttpServletResponse response) throws IOException {
+        PaymentResponse paymentResponse = payService.createPayTransaction(request);
+        String redirectUrl = String.format("%s?payment=%s", clientPayUrl, paymentResponse.token());
         log.info("{}", paymentResponse.token());
         response.sendRedirect(redirectUrl);
     }
@@ -49,10 +48,17 @@ public class PayController {
         return ApiResponse.ok(status);
     }
 
-    // 페이 환불 요청
+    // 결제 환불 요청
     @PostMapping("/refund")
-    public ApiResponse<RefundResponse> refund(@RequestBody TransactionRequest request) {
-        RefundResponse response = payService.refund(request);
+    public ApiResponse<ProcessPaymentResponse> refund(@RequestBody UpdateTransactionRequest request) {
+        ProcessPaymentResponse response = payService.refund(request);
+        return ApiResponse.ok(response);
+    }
+
+    // 결제 취소 요청
+    @PostMapping("/cancellation")
+    public ApiResponse<ProcessPaymentResponse> cancellation(@RequestBody UpdateTransactionRequest request) {
+        ProcessPaymentResponse response = payService.cancellation(request);
         return ApiResponse.ok(response);
     }
 

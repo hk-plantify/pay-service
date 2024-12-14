@@ -1,4 +1,4 @@
-package com.plantify.pay.domain.dto.kafka;
+package com.plantify.pay.domain.dto.process;
 
 import com.plantify.pay.domain.entity.Status;
 

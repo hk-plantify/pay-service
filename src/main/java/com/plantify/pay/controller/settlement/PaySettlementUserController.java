@@ -1,7 +1,7 @@
 package com.plantify.pay.controller.settlement;
 
 import com.plantify.pay.domain.dto.settlement.PaySettlementUserResponse;
-import com.plantify.pay.domain.entity.TransactionType;
+import com.plantify.pay.domain.entity.Status;
 import com.plantify.pay.global.response.ApiResponse;
 import com.plantify.pay.service.settlement.PaySettlementUserService;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,8 +28,8 @@ public class PaySettlementUserController {
 
     // 자신의 특정 결제 내역
     @GetMapping("/{type}")
-    public ApiResponse<PaySettlementUserResponse> getPaySettlementByTransactionType(@PathVariable TransactionType type) {
-        PaySettlementUserResponse response = paySettlementUserService.getPaySettlementByTransactionType(type);
+    public ApiResponse<PaySettlementUserResponse> getPaySettlementByStatus(@PathVariable Status status) {
+        PaySettlementUserResponse response = paySettlementUserService.getPaySettlementByStatus(status);
         return ApiResponse.ok(response);
     }
 }

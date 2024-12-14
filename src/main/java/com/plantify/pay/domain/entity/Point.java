@@ -27,34 +27,26 @@ public class Point extends BaseEntity {
     @Column(nullable = false)
     private Long pointBalance;
 
-    @Column(nullable = false)
-    private Long accumulatedPoints;
-
-    @Column(nullable = false)
-    private Long redeemedPoints;
-
     public Point init(Long userId) {
         this.userId = userId;
         this.pointBalance = 0L;
-        this.accumulatedPoints = 0L;
-        this.redeemedPoints = 0L;
         return this;
     }
 
     public Point validatePoint(long use){
-        if (this.pointBalance < use) {
+        if (this.pointBalance < use && pointBalance > 0) {
             throw new ApplicationException(PointErrorCode.INSUFFICIENT_POINTS);
         }
         return this;
     }
 
-    public void updatePoint(long newPoint){
+    public Point addPoint(long newPoint){
         this.pointBalance += newPoint;
-        this.accumulatedPoints += newPoint;
+        return this;
     }
 
-    public void usePoint(long use){
+    public Point usePoint(long use){
         this.pointBalance -= use;
-        this.redeemedPoints += use;
+        return this;
     }
 }

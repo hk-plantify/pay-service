@@ -46,8 +46,9 @@ public class Pay extends BaseEntity {
         this.balance = 0L;
     }
 
-    public void updatedBalance(long amount){
+    public Pay updatedBalance(long amount){
         this.balance += amount;
+        return this;
     }
 
     public Pay validateAmount(long amount){

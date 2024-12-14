@@ -2,7 +2,7 @@ package com.plantify.pay.service.settlement;
 
 import com.plantify.pay.domain.dto.settlement.PaySettlementRequest;
 import com.plantify.pay.domain.entity.Pay;
-import com.plantify.pay.domain.entity.TransactionType;
+import com.plantify.pay.domain.entity.Status;
 import com.plantify.pay.global.exception.errorcode.PayErrorCode;
 import com.plantify.pay.global.util.UserInfoProvider;
 import com.plantify.pay.domain.dto.settlement.PaySettlementUserResponse;
@@ -25,7 +25,6 @@ public class PaySettlementUserServiceImpl implements PaySettlementUserService {
 
     private final PaySettlementRepository paySettlementRepository;
     private final UserInfoProvider userInfoProvider;
-    private final PayRepository payRepository;
 
     @Override
     public Page<PaySettlementUserResponse> getAllPaySettlements(Pageable pageable) {
@@ -40,21 +39,10 @@ public class PaySettlementUserServiceImpl implements PaySettlementUserService {
     }
 
     @Override
-    public PaySettlementUserResponse getPaySettlementByTransactionType(TransactionType transactionType) {
+    public PaySettlementUserResponse getPaySettlementByStatus(Status status) {
         Long userId = userInfoProvider.getUserInfo().userId();
-        PaySettlement paySettlement = paySettlementRepository.findByTransactionTypeAndPayUserId(transactionType, userId)
+        PaySettlement paySettlement = paySettlementRepository.findByStatusAndPayUserId(status, userId)
                 .orElseThrow(() -> new ApplicationException(SettlementErrorCode.PAY_SETTLEMENT_NOT_FOUND));
         return PaySettlementUserResponse.from(paySettlement);
-    }
-
-    @Override
-    @Transactional
-    public void savePaySettlement(PaySettlementRequest request) {
-        Long userId = request.userId();
-        Pay pay = payRepository.findByUserId(userId)
-                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
-
-        PaySettlement savedPaySettlement = request.toEntity(pay);
-        paySettlementRepository.save(savedPaySettlement);
     }
 }

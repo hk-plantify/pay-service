@@ -24,7 +24,7 @@ public class Account extends BaseEntity {
     private Pay pay;
 
     @Column(nullable = false)
-    private Long accountNum;
+    private String accountNum;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

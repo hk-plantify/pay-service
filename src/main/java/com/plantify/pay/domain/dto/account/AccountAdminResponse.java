@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public record AccountAdminResponse(
         Long accountId,
         Long userId,
-        Long accountNum,
+        String accountNum,
         BankName bankName,
         AccountStatus accountStatus,
         LocalDateTime createdAt,

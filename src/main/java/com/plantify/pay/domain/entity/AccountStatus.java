@@ -1,6 +1,9 @@
 package com.plantify.pay.domain.entity;
 
-public enum AccountStatus {
+import java.io.Serializable;
+
+public enum AccountStatus implements Serializable {
+
     ACTIVE,
     INACTIVE,
     SUSPENDED

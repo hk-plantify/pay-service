@@ -1,12 +1,11 @@
-package com.plantify.pay.domain.dto.kafka;
+package com.plantify.pay.domain.dto.process;
 
 public record TransactionRequest(
         Long userId,
         Long sellerId,
+        String orderId,
         String orderName,
         Long amount,
-        String transactionType,
-        String reason,
         String redirectUri
 ) {
 }

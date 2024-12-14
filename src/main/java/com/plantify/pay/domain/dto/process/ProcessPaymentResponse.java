@@ -1,4 +1,6 @@
-package com.plantify.pay.domain.dto.kafka;
+package com.plantify.pay.domain.dto.process;
+
+import com.plantify.pay.domain.entity.Status;
 
 import java.time.LocalDateTime;
 
@@ -11,8 +13,7 @@ public record ProcessPaymentResponse(
         Long sellerId,
         Long amount,
         Long pointToUse,
-        String transactionType,
-        String status,
+        Status status,
         String redirectUri,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

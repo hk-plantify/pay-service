@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public record AccountUserResponse(
         Long accountId,
-        Long accountNum,
+        String accountNum,
         BankName bankName,
         AccountStatus accountStatus,
         LocalDateTime createdAt,

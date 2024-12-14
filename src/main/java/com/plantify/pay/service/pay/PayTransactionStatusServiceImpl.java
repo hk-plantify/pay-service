@@ -1,6 +1,6 @@
 package com.plantify.pay.service.pay;
 
-import com.plantify.pay.domain.dto.kafka.TransactionStatusMessage;
+import com.plantify.pay.domain.dto.process.TransactionStatusMessage;
 import com.plantify.pay.domain.entity.*;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.PayErrorCode;
@@ -37,7 +37,7 @@ public class PayTransactionStatusServiceImpl implements PayTransactionStatusServ
             payRepository.save(pay);
 
             Long rewardPoints = Math.round(message.amount() * POINT_REWARD_RATE);
-            pointService.rewardPoints(message.userId(), rewardPoints);
+            pointService.addPoints(message.userId(), rewardPoints);
         } finally {
             distributedLock.unlock(lockKey);
         }

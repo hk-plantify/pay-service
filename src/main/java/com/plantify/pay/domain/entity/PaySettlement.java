@@ -27,7 +27,7 @@ public class PaySettlement extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TransactionType transactionType;
+    private Status status;
 
     @Column
     private String orderId;
@@ -37,4 +37,12 @@ public class PaySettlement extends BaseEntity {
 
     @Column(nullable = false)
     private Long amount;
+
+    @Column
+    private Long pointUsed;
+
+    public PaySettlement updateStatus(Status status) {
+        this.status = status;
+        return this;
+    }
 }

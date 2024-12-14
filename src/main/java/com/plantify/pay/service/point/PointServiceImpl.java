@@ -18,33 +18,33 @@ public class PointServiceImpl implements PointService {
     private final DistributedLock distributedLock;
 
     @Override
-    public void rewardPoints(Long userId, Long rewardPoints) {
+    public void addPoints(Long userId, Long newPoints) {
         String lockKey = String.format("points:%d", userId);
 
         try {
             distributedLock.tryLockOrThrow(lockKey);
 
             Point point = pointRepository.findByUserId(userId)
-                    .orElseThrow(() -> new ApplicationException(PointErrorCode.POINT_NOT_FOUND));
-
-            point.updatePoint(rewardPoints);
+                    .orElseThrow(() -> new ApplicationException(PointErrorCode.POINT_NOT_FOUND))
+                    .addPoint(newPoints);
+            pointRepository.save(point);
         } finally {
             distributedLock.unlock(lockKey);
         }
     }
 
     @Override
-    public void PointsToUse(Long userId, Long pointToUse) {
+    public void usePoints(Long userId, Long pointToUse) {
         String lockKey = String.format("points:%d", userId);
 
         try {
             distributedLock.tryLockOrThrow(lockKey);
 
             Point point = pointRepository.findByUserId(userId)
-                    .orElseThrow(() -> new ApplicationException(PointErrorCode.POINT_NOT_FOUND));
-            point.validatePoint(pointToUse)
+                    .orElseThrow(() -> new ApplicationException(PointErrorCode.POINT_NOT_FOUND))
+                    .validatePoint(pointToUse)
                     .usePoint(pointToUse);
-
+            pointRepository.save(point);
         } finally {
             distributedLock.unlock(lockKey);
         }

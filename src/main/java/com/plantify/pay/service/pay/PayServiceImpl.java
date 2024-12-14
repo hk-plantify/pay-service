@@ -1,48 +1,74 @@
 package com.plantify.pay.service.pay;
 
 import com.plantify.pay.client.TransactionServiceClient;
-import com.plantify.pay.domain.dto.kafka.*;
-import com.plantify.pay.domain.dto.pay.ExternalSettlementResponse;
+import com.plantify.pay.domain.dto.process.*;
 import com.plantify.pay.domain.dto.pay.PayBalanceResponse;
+import com.plantify.pay.domain.dto.settlement.PaySettlementRequest;
 import com.plantify.pay.domain.entity.*;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.AuthErrorCode;
 import com.plantify.pay.global.exception.errorcode.PayErrorCode;
 import com.plantify.pay.global.exception.errorcode.PointErrorCode;
-import com.plantify.pay.global.util.UserInfoProvider;
+import com.plantify.pay.global.util.DistributedLock;
 import com.plantify.pay.jwt.JwtProvider;
 import com.plantify.pay.repository.AccountRepository;
 import com.plantify.pay.repository.PayRepository;
 import com.plantify.pay.repository.PointRepository;
 import com.plantify.pay.service.point.PointService;
-import com.plantify.pay.service.settlement.PaySettlementUserService;
+import com.plantify.pay.service.settlement.PaySettlementService;;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PayServiceImpl implements PayService {
 
+    private final DistributedLock distributedLock;
     private final JwtProvider jwtProvider;
     private final TransactionServiceClient transactionServiceClient;
-    private final PayInternalService payInternalService;
-    private final PayRepository payRepository;
+    private final PointService pointService;
+    private final PaySettlementService paySettlementService;
     private final PointRepository pointRepository;
+    private final PayRepository payRepository;
     private final AccountRepository accountRepository;
 
     @Override
     @Transactional
-    public PaymentResponse initiatePayment(TransactionRequest request) {
-        return payInternalService.payTransaction(request, true);
+    public PaymentResponse createPayTransaction(PendingTransactionRequest request) {
+        String lockKey = String.format("pay:%d", request.userId());
+
+        try {
+            distributedLock.tryLockOrThrow(lockKey);
+
+            payRepository.findByUserId(request.userId())
+                    .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
+
+            TransactionRequest transactionRequest = new TransactionRequest(
+                    request.userId(),
+                    request.sellerId(),
+                    UUID.randomUUID().toString(),
+                    request.orderName(),
+                    request.amount(),
+                    request.redirectUri()
+            );
+
+            TransactionResponse response = transactionServiceClient.createPendingTransaction(transactionRequest).getData();
+            String token = jwtProvider.createAccessToken(response.transactionId());
+
+            return PaymentResponse.from(response, token, request.redirectUri());
+        } finally {
+            distributedLock.unlock(lockKey);
+        }
     }
 
     @Override
     @Transactional
     public TransactionStatusResponse getTransactionStatus(String token) {
-//        String token = jwtProvider.extractTokenFromHeader(authorizationHeader);
         if (token == null || !jwtProvider.validateToken(token)) {
             throw new ApplicationException(AuthErrorCode.INVALID_TOKEN);
         }
@@ -63,7 +89,6 @@ public class PayServiceImpl implements PayService {
                 response.sellerId(),
                 response.orderId(),
                 response.orderName(),
-                response.transactionType(),
                 response.status(),
                 response.amount(),
                 response.redirectUri(),
@@ -76,17 +101,121 @@ public class PayServiceImpl implements PayService {
         );
     }
 
+
     @Override
     @Transactional
     public ProcessPaymentResponse verifyAndProcessPayment(String token, Long pointToUse) {
-//        String token = jwtProvider.extractTokenFromHeader(authorizationHeader);
-        return payInternalService.processPayment(token, pointToUse);
+        if (token == null || !jwtProvider.validateToken(token)) {
+            throw new ApplicationException(AuthErrorCode.INVALID_TOKEN);
+        }
+
+        Long transactionId = jwtProvider.getClaims(token).get("id", Long.class);
+        TransactionResponse transactionResponse = transactionServiceClient.getTransactionById(transactionId).getData();
+        Long userId = transactionResponse.userId();
+        long finalAmount = transactionResponse.amount() - pointToUse;
+
+        Pay pay = payRepository.findByUserId(userId)
+                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND))
+                .validatePay(finalAmount).success(finalAmount);
+        payRepository.save(pay);
+        pointService.usePoints(userId, pointToUse);
+
+        transactionServiceClient.updateTransactionToSuccess(new PayTransactionRequest(transactionId));
+
+        paySettlementService.savePaySettlement(new PaySettlementRequest(
+                userId,
+                transactionResponse.orderId(),
+                transactionResponse.orderName(),
+                finalAmount,
+                Status.PAYMENT,
+                pointToUse
+        ));
+
+        return new ProcessPaymentResponse(
+                transactionId,
+                transactionResponse.userId(),
+                transactionResponse.paymentId(),
+                transactionResponse.orderId(),
+                transactionResponse.orderName(),
+                transactionResponse.sellerId(),
+                transactionResponse.amount(),
+                pointToUse,
+                transactionResponse.status(),
+                transactionResponse.redirectUri(),
+                transactionResponse.createdAt(),
+                transactionResponse.updatedAt()
+        );
     }
 
     @Override
     @Transactional
-    public RefundResponse refund(TransactionRequest request) {
-        return payInternalService.refundTransaction(request);
+    public ProcessPaymentResponse refund(UpdateTransactionRequest request) {
+        String lockKey = String.format("refund:%d", request.userId());
+
+        try {
+            distributedLock.tryLockOrThrow(lockKey);
+
+            TransactionResponse transactionResponse = transactionServiceClient.updateTransactionToRefund(request).getData();
+
+            PaySettlement paySettlement = paySettlementService.updateSettlementStatus(request.orderId(), transactionResponse.status());
+
+            Pay pay = payRepository.findByUserId(request.userId())
+                    .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND))
+                    .updatedBalance(paySettlement.getAmount());
+            payRepository.save(pay);
+
+            pointService.addPoints(request.userId(), paySettlement.getPointUsed());
+
+            return new ProcessPaymentResponse(
+                    transactionResponse.transactionId(),
+                    transactionResponse.userId(),
+                    transactionResponse.paymentId(),
+                    transactionResponse.orderId(),
+                    transactionResponse.orderName(),
+                    transactionResponse.sellerId(),
+                    transactionResponse.amount(),
+                    0L,
+                    Status.REFUND,
+                    transactionResponse.redirectUri(),
+                    transactionResponse.createdAt(),
+                    transactionResponse.updatedAt()
+            );
+        } finally {
+            distributedLock.unlock(lockKey);
+        }
+    }
+
+    @Override
+    @Transactional
+    public ProcessPaymentResponse cancellation(UpdateTransactionRequest request) {
+        String lockKey = String.format("cancel:%d", request.userId());
+
+        try {
+            distributedLock.tryLockOrThrow(lockKey);
+
+            TransactionResponse transactionResponse = transactionServiceClient.updatePayTransactionToCancellation(request).getData();
+
+            Pay pay = payRepository.findByUserId(request.userId())
+                    .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
+            payRepository.save(pay);
+
+            return new ProcessPaymentResponse(
+                    transactionResponse.transactionId(),
+                    transactionResponse.userId(),
+                    transactionResponse.paymentId(),
+                    transactionResponse.orderId(),
+                    transactionResponse.orderName(),
+                    transactionResponse.sellerId(),
+                    transactionResponse.amount(),
+                    0L,
+                    Status.CANCELLATION,
+                    transactionResponse.redirectUri(),
+                    transactionResponse.createdAt(),
+                    transactionResponse.updatedAt()
+            );
+        } finally {
+            distributedLock.unlock(lockKey);
+        }
     }
 
     @Override
@@ -100,4 +229,5 @@ public class PayServiceImpl implements PayService {
 
         return new PayBalanceResponse(pay.getBalance());
     }
+
 }

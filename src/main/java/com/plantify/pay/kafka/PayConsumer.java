@@ -1,6 +1,6 @@
 package com.plantify.pay.kafka;
 
-import com.plantify.pay.domain.dto.kafka.TransactionStatusMessage;
+import com.plantify.pay.domain.dto.process.TransactionStatusMessage;
 import com.plantify.pay.service.pay.PayTransactionStatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class PayConsumer {
         log.info("Received TransactionStatusMessage: {}", message);
         try {
             switch (message.status()) {
-                case SUCCESS -> payTransactionStatusService.processSuccessfulTransaction(message);
+                case PAYMENT -> payTransactionStatusService.processSuccessfulTransaction(message);
                 case FAILED -> payTransactionStatusService.processFailedTransaction(message);
                 default -> log.warn("Unknown status: {}", message.status());
             }

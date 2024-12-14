@@ -1,9 +1,9 @@
 package com.plantify.pay.client;
 
-import com.plantify.pay.domain.dto.kafka.*;
+import com.plantify.pay.domain.dto.process.*;
 import com.plantify.pay.domain.entity.Status;
 import com.plantify.pay.global.response.ApiResponse;
-import com.plantify.pay.domain.dto.kafka.PayTransactionRequest;
+import com.plantify.pay.domain.dto.process.PayTransactionRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,15 +15,19 @@ public interface TransactionServiceClient {
     @GetMapping("/v1/transactions/{transactionId}")
     ApiResponse<TransactionResponse> getTransactionById(@PathVariable Long transactionId);
 
-    @PostMapping("/v1/transactions")
-    ApiResponse<TransactionResponse> createPendingTransaction(@RequestBody PaymentRequest request);
-
-    @PostMapping("/v1/transactions/payments")
-    ApiResponse<TransactionResponse> createPayTransaction(@RequestBody PayTransactionRequest request);
-
     @GetMapping("/v1/transactions/exist")
     boolean existsByUserIdAndStatusIn(@RequestParam Long userId, @RequestParam String orderId, @RequestParam List<Status> statusList);
 
+    @PostMapping("/v1/transactions")
+    ApiResponse<TransactionResponse> createPendingTransaction(@RequestBody TransactionRequest request);
+
+    @PostMapping("/v1/transactions/payments")
+    ApiResponse<TransactionResponse> updateTransactionToSuccess(@RequestBody PayTransactionRequest request);
+
     @PostMapping("/v1/transactions/refunds")
-    ApiResponse<TransactionResponse> refundTransaction(@RequestBody TransactionRequest request);
+    ApiResponse<TransactionResponse> updateTransactionToRefund(@RequestBody UpdateTransactionRequest request);
+
+    @PostMapping("/v1/transactions/cancellations")
+    ApiResponse<TransactionResponse> updatePayTransactionToCancellation(@RequestBody UpdateTransactionRequest request);
+
 }
