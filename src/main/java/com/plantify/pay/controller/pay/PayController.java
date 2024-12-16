@@ -29,7 +29,7 @@ public class PayController {
     public ResponseEntity<String> initiatePayment(
             @RequestBody PendingTransactionRequest request)  {
         PaymentResponse paymentResponse = payService.createPayTransaction(request);
-        String redirectUrl = String.format("%s?payment=%s", clientPayUrl, paymentResponse.token());
+        String redirectUrl = String.format("%s/payment?token=%s", clientPayUrl, paymentResponse.token());
         log.info("{}", paymentResponse.token());
         return ResponseEntity.ok(redirectUrl);
     }
