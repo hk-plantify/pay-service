@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,12 +26,12 @@ public class PayController {
 
     // 페이 결제 요청(Pending)
     @PostMapping("/payment")
-    public void initiatePayment(
-            @RequestBody PendingTransactionRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<String> initiatePayment(
+            @RequestBody PendingTransactionRequest request)  {
         PaymentResponse paymentResponse = payService.createPayTransaction(request);
         String redirectUrl = String.format("%s?payment=%s", clientPayUrl, paymentResponse.token());
         log.info("{}", paymentResponse.token());
-        response.sendRedirect(redirectUrl);
+        return ResponseEntity.ok(redirectUrl);
     }
 
     // 트랜잭션 상태 검증

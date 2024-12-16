@@ -19,6 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class PaySettlementUserServiceImpl implements PaySettlementUserService {
@@ -39,10 +41,23 @@ public class PaySettlementUserServiceImpl implements PaySettlementUserService {
     }
 
     @Override
-    public PaySettlementUserResponse getPaySettlementByStatus(Status status) {
+    public Page<PaySettlementUserResponse> getPaySettlementByStatus(Status status, Pageable pageable) {
         Long userId = userInfoProvider.getUserInfo().userId();
-        PaySettlement paySettlement = paySettlementRepository.findByStatusAndPayUserId(status, userId)
-                .orElseThrow(() -> new ApplicationException(SettlementErrorCode.PAY_SETTLEMENT_NOT_FOUND));
-        return PaySettlementUserResponse.from(paySettlement);
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+        return paySettlementRepository.findByStatusAndPayUserId(status, userId, sortedPageable)
+                .map(PaySettlementUserResponse::from);
+    }
+
+    @Override
+    public Long getPaySettlementAmount() {
+        Long userId = userInfoProvider.getUserInfo().userId();
+        int currentMonth = LocalDate.now().getMonthValue();
+        int currentYear = LocalDate.now().getYear();
+        Long totalAmountByUserIdAndMonth = paySettlementRepository.getTotalAmountByUserIdAndMonth(userId, currentMonth, currentYear);
+        return totalAmountByUserIdAndMonth != null ? totalAmountByUserIdAndMonth : 0;
     }
 }

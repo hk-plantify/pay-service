@@ -27,9 +27,17 @@ public class PaySettlementUserController {
     }
 
     // 자신의 특정 결제 내역
-    @GetMapping("/{type}")
-    public ApiResponse<PaySettlementUserResponse> getPaySettlementByStatus(@PathVariable Status status) {
-        PaySettlementUserResponse response = paySettlementUserService.getPaySettlementByStatus(status);
-        return ApiResponse.ok(response);
+    @GetMapping("/{status}")
+    public ApiResponse<Page<PaySettlementUserResponse>> getPaySettlementByStatus(
+            @PathVariable Status status, Pageable pageable) {
+        Page<PaySettlementUserResponse> paySettlementByStatus = paySettlementUserService.getPaySettlementByStatus(status, pageable);
+        return ApiResponse.ok(paySettlementByStatus);
+    }
+
+    // 한 달 동안 결제 내역
+    @GetMapping("/amount")
+    public ApiResponse<Long> getPaySettlementAmount() {
+        Long amount = paySettlementUserService.getPaySettlementAmount();
+        return ApiResponse.ok(amount);
     }
 }

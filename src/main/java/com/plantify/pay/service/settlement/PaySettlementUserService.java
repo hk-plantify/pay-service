@@ -9,5 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface PaySettlementUserService {
 
     Page<PaySettlementUserResponse> getAllPaySettlements(Pageable pageable);
-    PaySettlementUserResponse getPaySettlementByStatus(Status status);
+    Page<PaySettlementUserResponse> getPaySettlementByStatus(Status status, Pageable pageable);
+    Long getPaySettlementAmount();
+
 }
