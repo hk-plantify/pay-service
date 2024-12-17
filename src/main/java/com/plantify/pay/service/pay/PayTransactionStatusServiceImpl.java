@@ -25,6 +25,7 @@ public class PayTransactionStatusServiceImpl implements PayTransactionStatusServ
     private static final double POINT_REWARD_RATE = 0.005;
 
     // 성공
+    @Override
     public void processSuccessfulTransaction(TransactionStatusMessage message) {
         String lockKey = String.format("pay:%d", message.userId());
 
@@ -44,6 +45,7 @@ public class PayTransactionStatusServiceImpl implements PayTransactionStatusServ
     }
 
     // 실패
+    @Override
     public void processFailedTransaction(TransactionStatusMessage message) {
         String lockKey = String.format("pay:%d", message.userId());
 

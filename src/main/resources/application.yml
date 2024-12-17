@@ -20,7 +20,7 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
   kafka:
-    bootstrap-servers: kafka.kafka.svc.cluster.local:9092
+    bootstrap-servers: localhost:9092
     consumer:
       group-id: pay-service-group
       auto-offset-reset: earliest
@@ -33,7 +33,7 @@ spring:
       transaction-status: transaction-status
   data:
     redis:
-      host: redis-master.kafka.svc.cluster.local
+      host: localhost
       port: 6379
       password: NRCwHXG7HR
       timeout: 2000ms
@@ -45,10 +45,10 @@ spring:
 
 auth:
   service:
-    url: http://auth-service.auth.svc.cluster.local:8080
+    url: http://localhost:8888
 transaction:
   service:
-    url: http://transaction-service.transaction.svc.cluster.local:8080
+    url: http://localhost:2222
 
 jwt:
   secret: ENC(29vK1PECW2Jls40pgFDgITil5EnUObTxvycoWtm7Orm+Xj93YE5bZHjPKPLcaQNsGnddf5uX+lc=)
@@ -59,3 +59,5 @@ client:
     url: ENC(6glvmh8vfHd2D/ALcgqR+tXcm+DH+AZbkofU7nK5p2eE0RzPXoNE1uHTORYrT/dA)
   pay:
     url: ENC(YKKOs+X8eUEdzzngWa8yjQlR4W0uy69aKFe1AMAee9FP2nauBEWpCM6FyDXpbIprBGi7LReqA4M=)
+server:
+  port: 1111

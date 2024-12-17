@@ -56,7 +56,6 @@ public class SecurityConfig {
     @Value("${client.pay.url}")
     private String clientPayUrl;
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

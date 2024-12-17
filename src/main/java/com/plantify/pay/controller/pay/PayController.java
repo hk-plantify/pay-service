@@ -21,17 +21,11 @@ public class PayController {
 
     private final PayService payService;
 
-    @Value("${client.pay.url}")
-    private String clientPayUrl;
-
     // 페이 결제 요청(Pending)
     @PostMapping("/payment")
-    public ResponseEntity<String> initiatePayment(
-            @RequestBody PendingTransactionRequest request)  {
+    public ResponseEntity<PaymentResponse> initiatePayment(@RequestBody PendingTransactionRequest request)  {
         PaymentResponse paymentResponse = payService.createPayTransaction(request);
-        String redirectUrl = String.format("%s/payment?token=%s", clientPayUrl, paymentResponse.token());
-        log.info("{}", paymentResponse.token());
-        return ResponseEntity.ok(redirectUrl);
+        return ResponseEntity.ok(paymentResponse);
     }
 
     // 트랜잭션 상태 검증

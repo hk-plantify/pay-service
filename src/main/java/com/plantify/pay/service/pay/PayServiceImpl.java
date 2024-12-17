@@ -59,7 +59,7 @@ public class PayServiceImpl implements PayService {
 
             TransactionResponse response = transactionServiceClient.createPendingTransaction(transactionRequest).getData();
             String token = jwtProvider.createAccessToken(response.transactionId());
-
+            log.info("Created new pay transaction: {}", token);
             return PaymentResponse.from(response, token, request.redirectUri());
         } finally {
             distributedLock.unlock(lockKey);
