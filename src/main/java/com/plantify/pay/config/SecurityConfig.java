@@ -56,10 +56,13 @@ public class SecurityConfig {
     @Value("${client.pay.url}")
     private String clientPayUrl;
 
+    @Value("${client.external.url}")
+    private String clientExternalUrl;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", clientBaseUrl, clientPayUrl));
+        config.setAllowedOrigins(List.of("http://localhost:3000", clientBaseUrl, clientPayUrl, clientExternalUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
