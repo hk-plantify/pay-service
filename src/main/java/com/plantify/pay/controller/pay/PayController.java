@@ -23,9 +23,9 @@ public class PayController {
 
     // 페이 결제 요청(Pending)
     @PostMapping("/payment")
-    public ResponseEntity<PaymentResponse> initiatePayment(@RequestBody PendingTransactionRequest request)  {
+    public ResponseEntity<String> initiatePayment(@RequestBody PendingTransactionRequest request)  {
         PaymentResponse paymentResponse = payService.createPayTransaction(request);
-        return ResponseEntity.ok(paymentResponse);
+        return ResponseEntity.ok(paymentResponse.token());
     }
 
     // 트랜잭션 상태 검증
