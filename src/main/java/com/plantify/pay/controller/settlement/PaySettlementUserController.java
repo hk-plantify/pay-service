@@ -38,6 +38,6 @@ public class PaySettlementUserController {
     @GetMapping("/amount")
     public ApiResponse<Long> getPaySettlementAmount() {
         Long amount = paySettlementUserService.getPaySettlementAmount();
-        return ApiResponse.ok(amount);
+        return ApiResponse.ok(amount); 
     }
 }

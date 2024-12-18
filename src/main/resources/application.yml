@@ -49,6 +49,9 @@ auth:
 transaction:
   service:
     url: http://transaction-service.transaction.svc.cluster.local:8080
+apiuser:
+  service:
+    url: http://apiuser-service.apiuser.svc.cluster.local:8080
 
 jwt:
   secret: ENC(29vK1PECW2Jls40pgFDgITil5EnUObTxvycoWtm7Orm+Xj93YE5bZHjPKPLcaQNsGnddf5uX+lc=)
