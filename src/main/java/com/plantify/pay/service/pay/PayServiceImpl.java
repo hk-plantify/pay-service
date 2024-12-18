@@ -126,7 +126,7 @@ public class PayServiceImpl implements PayService {
                 userId,
                 transactionResponse.orderId(),
                 transactionResponse.orderName(),
-                finalAmount,
+                transactionResponse.amount(),
                 Status.PAYMENT,
                 pointToUse
         ));
