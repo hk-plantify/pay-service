@@ -1,1 +1,66 @@
-spring.application.name=pay
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: ${JASYPT_PASSWORD}
+
+spring:
+  application:
+    name: pay
+  datasource:
+    url: ENC(NToQ9DCkOSTCqQ+C9fL6DXXhDB4MaPUDYSCSr55jiiddiKGcEelaCV8onwXwFct4uoP0xfh1YpmF/bDiEDWMQ4aa9MyDP1Th)
+    username: ENC(XhGT41xwg0J9hSXkV9tPjQ==)
+    password: ENC(cOWaniGDoCFEXR9v+wRBVEwsJ5Hg6vQN)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  kafka:
+    bootstrap-servers: kafka.kafka.svc.cluster.local:9092
+    consumer:
+      group-id: pay-service-group
+      auto-offset-reset: earliest
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    topic:
+      transaction-status: transaction-status
+  data:
+    redis:
+      host: redis-master.kafka.svc.cluster.local
+      port: 6379
+      password: NRCwHXG7HR
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+auth:
+  service:
+    url: http://auth-service.auth.svc.cluster.local:8080
+transaction:
+  service:
+    url: http://transaction-service.transaction.svc.cluster.local:8080
+apiuser:
+  service:
+    url: http://apiuser-service.apiuser.svc.cluster.local:8080
+
+jwt:
+  secret: ENC(29vK1PECW2Jls40pgFDgITil5EnUObTxvycoWtm7Orm+Xj93YE5bZHjPKPLcaQNsGnddf5uX+lc=)
+  access-token-expiration: ENC(ch/UXDWKupu5PnMpcI3DEg==)
+
+client:
+  base:
+    url: ENC(6glvmh8vfHd2D/ALcgqR+tXcm+DH+AZbkofU7nK5p2eE0RzPXoNE1uHTORYrT/dA)
+  pay:
+    url: ENC(YKKOs+X8eUEdzzngWa8yjQlR4W0uy69aKFe1AMAee9FP2nauBEWpCM6FyDXpbIprBGi7LReqA4M=)
+  external:
+    url: https://repick.site/
