@@ -1,4 +1,4 @@
-package com.plantify.pay.service.pay;
+package com.plantify.pay.service.pay.event;
 
 import com.plantify.pay.domain.dto.process.TransactionStatusMessage;
 
