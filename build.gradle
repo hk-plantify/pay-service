@@ -52,8 +52,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	// redis
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-//	implementation 'org.redisson:redisson-spring-boot-starter:3.40.0'
+	implementation 'org.redisson:redisson-spring-boot-starter:3.40.0'
 }
 
 dependencyManagement {
