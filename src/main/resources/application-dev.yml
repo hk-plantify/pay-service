@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: pay
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/plantify
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    admin:
+      auto-create: true
+    consumer:
+      group-id: pay-service-group
+      auto-offset-reset: earliest
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    topic:
+      transaction-status: transaction-status
+
+redisson:
+  mode: single
+  single:
+    address: redis://localhost:6379
+
+auth:
+  service:
+    url: http://localhost:8081
+transaction:
+  service:
+    url: http://localhost:8083
+
+jwt:
+  secret: test-secret
+  access-token-expiration: 3600000
+
+server:
+  port: 8082
