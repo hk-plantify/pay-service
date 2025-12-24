@@ -1,13 +1,10 @@
 package com.plantify.pay.domain.entity;
 
-import com.plantify.pay.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Builder(toBuilder = true)

@@ -2,7 +2,6 @@ package com.plantify.pay.domain.entity;
 
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.PayErrorCode;
-import com.plantify.pay.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
