@@ -1,7 +1,7 @@
 package com.plantify.pay.kafka;
 
 import com.plantify.pay.domain.dto.process.TransactionStatusMessage;
-import com.plantify.pay.service.pay.PayTransactionStatusService;
+import com.plantify.pay.service.pay.event.PayTransactionStatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
