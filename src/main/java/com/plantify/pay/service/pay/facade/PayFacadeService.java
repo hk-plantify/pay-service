@@ -1,9 +1,9 @@
-package com.plantify.pay.service.pay;
+package com.plantify.pay.service.pay.facade;
 
 import com.plantify.pay.domain.dto.pay.PayBalanceResponse;
 import com.plantify.pay.domain.dto.process.*;
 
-public interface PayService {
+public interface PayFacadeService {
 
     PaymentResponse createPayTransaction(PendingTransactionRequest request);
     TransactionStatusResponse getTransactionStatus(String token);

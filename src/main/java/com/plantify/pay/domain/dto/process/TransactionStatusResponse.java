@@ -1,7 +1,6 @@
 package com.plantify.pay.domain.dto.process;
 
-import com.plantify.pay.domain.entity.BankName;
-import com.plantify.pay.domain.entity.Status;
+import com.plantify.pay.domain.entity.*;
 
 import java.time.LocalDateTime;
 
@@ -21,4 +20,28 @@ public record TransactionStatusResponse(
         String accountNum,
         BankName bankName
 ) {
+
+    public static TransactionStatusResponse from(
+            TransactionResponse tx,
+            Pay pay,
+            Point point,
+            Account account
+    ) {
+        return new TransactionStatusResponse(
+                tx.transactionId(),
+                tx.userId(),
+                tx.sellerId(),
+                tx.orderId(),
+                tx.orderName(),
+                tx.status(),
+                tx.amount(),
+                tx.redirectUri(),
+                tx.createdAt(),
+                tx.updatedAt(),
+                point.getPointBalance(),
+                pay.getBalance(),
+                account.getAccountNum(),
+                account.getBankName()
+        );
+    }
 }

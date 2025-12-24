@@ -1,4 +1,4 @@
-package com.plantify.pay.global.util;
+package com.plantify.pay.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -29,5 +29,3 @@ public abstract class BaseEntity {
         updatedAt = LocalDateTime.now();
     }
 }
-
-

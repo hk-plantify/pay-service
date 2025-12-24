@@ -16,7 +16,7 @@ public interface TransactionServiceClient {
     ApiResponse<TransactionResponse> getTransactionById(@PathVariable Long transactionId);
 
     @GetMapping("/v1/transactions/exist")
-    boolean existsByUserIdAndStatusIn(@RequestParam Long userId, @RequestParam String orderId, @RequestParam List<Status> statusList);
+    boolean existsByUserIdAndStatusIn(@RequestParam String orderId, @RequestParam List<Status> statusList);
 
     @PostMapping("/v1/transactions")
     ApiResponse<TransactionResponse> createPendingTransaction(@RequestBody TransactionRequest request);

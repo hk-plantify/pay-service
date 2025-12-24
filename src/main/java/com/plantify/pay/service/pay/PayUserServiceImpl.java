@@ -3,20 +3,17 @@ package com.plantify.pay.service.pay;
 import com.plantify.pay.domain.dto.account.AccountUserRequest;
 import com.plantify.pay.domain.dto.pay.PayUserRequest;
 import com.plantify.pay.domain.dto.pay.PayUserResponse;
-import com.plantify.pay.domain.dto.settlement.PaySettlementRequest;
 import com.plantify.pay.domain.entity.Pay;
 import com.plantify.pay.domain.entity.Point;
-import com.plantify.pay.domain.entity.Status;
 import com.plantify.pay.global.exception.ApplicationException;
 import com.plantify.pay.global.exception.errorcode.AccountErrorCode;
 import com.plantify.pay.global.exception.errorcode.PayErrorCode;
-import com.plantify.pay.global.util.DistributedLock;
+import com.plantify.pay.global.util.UserInfoProvider;
 import com.plantify.pay.repository.AccountRepository;
 import com.plantify.pay.repository.PayRepository;
-import com.plantify.pay.global.util.UserInfoProvider;
 import com.plantify.pay.repository.PointRepository;
 import com.plantify.pay.service.account.AccountUserService;
-import com.plantify.pay.service.settlement.PaySettlementService;
+import com.plantify.pay.service.pay.ledger.LedgerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,9 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class PayUserServiceImpl implements PayUserService {
 
     private final UserInfoProvider userInfoProvider;
-    private final DistributedLock distributedLock;
     private final AccountUserService accountUserService;
-    private final PaySettlementService paySettlementService;
+    private final LedgerService ledgerService;
     private final AccountRepository accountRepository;
     private final PayRepository payRepository;
     private final PointRepository pointRepository;
@@ -78,30 +74,10 @@ public class PayUserServiceImpl implements PayUserService {
     }
 
     @Override
+    @Transactional
     public Pay rechargeBalance(Long userId, Long amount) {
-        String lockKey = String.format("pay:%d", userId);
-
-        try {
-            distributedLock.tryLockOrThrow(lockKey);
-
-            Pay pay = payRepository.findByUserId(userId)
-                    .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
-
-            pay.validateAmount(amount).updatedBalance(amount);
-            payRepository.save(pay);
-
-            paySettlementService.savePaySettlement(new PaySettlementRequest(
-                    userId,
-                    null,
-                    null,
-                    amount,
-                    Status.CHARGE,
-                    null)
-            );
-
-            return pay;
-        } finally {
-            distributedLock.unlock(lockKey);
-        }
+        ledgerService.credit(userId, amount, 0L);
+        return payRepository.findByUserId(userId)
+                .orElseThrow(() -> new ApplicationException(PayErrorCode.PAY_NOT_FOUND));
     }
 }
